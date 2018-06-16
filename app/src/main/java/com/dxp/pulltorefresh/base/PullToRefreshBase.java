@@ -1,10 +1,7 @@
-package com.dxp.pulltorefresh;
+package com.dxp.pulltorefresh.base;
 
 import android.content.Context;
 import android.graphics.BitmapFactory;
-import android.os.Build;
-import android.support.annotation.RequiresApi;
-import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -13,29 +10,21 @@ import android.view.View;
 import android.view.ViewConfiguration;
 import android.view.ViewGroup;
 import android.view.animation.RotateAnimation;
-import android.widget.AbsListView;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.Scroller;
 import android.widget.TextView;
 
 import com.dxp.R;
-import com.dxp.utils.MotionEventUtils;
 import com.dxp.utils.ViewUtils;
 
+public abstract class PullToRefreshBase<T extends View>  extends ViewGroup {
+    private String TAG = "PullToRefreshBase";
 
-/**
- * 支持ListView、GridView、RecycleView下拉刷新、上拉加载
- *
- * 遇到的问题
- * 1、progressbar 在布局文件中设置为gone 在代码中设置Visibility无效
- * 2、header、footer宽度是内容的宽高，宽度不是屏幕的宽度
- * 3、正在刷新状态下无法上滑到底部，正在加载状态下无法上拉到顶部
- * （因为在上拉、下拉的情况下，listView的高度不变，在屏幕中top和bottom位置发生了变化，有一部分离开了可视范围，这个问题可以解决但也可以忽略）
- */
-public class PullToRefreshView extends ViewGroup{
-    private static final String TAG = "PullToRefreshView2";
-    private Context mContext;
+    private Context context;
+
+    private T refreshView;
+
     private Scroller mScroller;
     /**
      * 在被判定为滚动之前用户手指可以移动的最大值。
@@ -164,7 +153,7 @@ public class PullToRefreshView extends ViewGroup{
     /**
      * 下拉刷新上拉加载的回调接口
      */
-    private PullToRefreshAndPushToLoadMoreListener mListener;
+    private RefreshLoadListener mListener;
 
     /**
      * 是否释放了手指
@@ -180,51 +169,40 @@ public class PullToRefreshView extends ViewGroup{
     private int screenHeight;
 
 
-    public PullToRefreshView(Context context) {
-        this(context, null);
+    public PullToRefreshBase(Context context) {
+        this(context,null);
     }
 
-    public PullToRefreshView(Context context, AttributeSet attrs) {
-        this(context, attrs, 0);
+    public PullToRefreshBase(Context context, AttributeSet attrs) {
+        super(context, attrs);
+        init(context,attrs);
     }
 
-    public PullToRefreshView(Context context, AttributeSet attrs, int defStyleAttr) {
-        super(context, attrs, defStyleAttr);
-        init(context);
-    }
+    private void init(Context context,AttributeSet attrs) {
+        this.context = context;
+        refreshView = setRefreshView(context,attrs);
 
-    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-    public PullToRefreshView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
-        super(context, attrs, defStyleAttr, defStyleRes);
-        init(context);
-    }
-
-    private void init(Context mContext) {
-        this.mContext = mContext;
-        mScroller = new Scroller(mContext);
+        mScroller = new Scroller(context);
         screenHeight = getResources().getDisplayMetrics().heightPixels;
 
-        header = LayoutInflater.from(mContext).inflate(R.layout.refresh_header2, null, false);
+        header = LayoutInflater.from(context).inflate(R.layout.refresh_header2, null, false);
         progressBar = header.findViewById(R.id.progress_bar);
         arrow = header.findViewById(R.id.arrow);
         description = header.findViewById(R.id.description);
         arrow.setImageBitmap(BitmapFactory.decodeResource(getResources(),R.mipmap.default_ptr_flip ));
 
-        footer = LayoutInflater.from(mContext).inflate(R.layout.loadmore_footer2, null, false);
+        footer = LayoutInflater.from(context).inflate(R.layout.loadmore_footer2, null, false);
         footerArrow = footer.findViewById(R.id.iv_footer_arrow);
         footerProgressBar = footer.findViewById(R.id.footer_progress_bar);
         footerDescription = footer.findViewById(R.id.footer_description);
         footerArrow.setImageBitmap(ViewUtils.rotateBitmap(BitmapFactory.decodeResource(getResources(),R.mipmap.default_ptr_flip),-180));
 
-        touchSlop = ViewConfiguration.get(mContext).getScaledTouchSlop();
-    }
+        touchSlop = ViewConfiguration.get(context).getScaledTouchSlop();
 
-    @Override
-    protected void onAttachedToWindow() {
-        super.onAttachedToWindow();
-        mView = getChildAt(0);
-        addView(header, 0);
-        addView(footer,getChildCount());
+        //放在onAttachedToWindow中添加也可以，在onAttachedToWindow可以获取到ViewGroup的child数量
+        addView(header);
+        addView(refreshView,new LayoutParams(LayoutParams.MATCH_PARENT,LayoutParams.MATCH_PARENT));
+        addView(footer);
     }
 
     @Override
@@ -260,18 +238,19 @@ public class PullToRefreshView extends ViewGroup{
         }
     }
 
+
     @Override
     public boolean onInterceptTouchEvent(MotionEvent ev) {
         if(mode == Mode.DISABLED){
             return false;
         }
-        MotionEventUtils.println(ev.getAction());
+//        MotionEventUtils.println(ev.getAction());
         switch (ev.getAction()){
             case MotionEvent.ACTION_DOWN:
                 isRelesedFinger = false;
                 mLastY = ev.getY();
-                judgeIsTop();
-                judgeIsBottom();
+                isTop = ((ViewDirector)refreshView).isScrolledTop();
+                isBottom = ((ViewDirector)refreshView).isScrolledBottom();
                 break;
             case MotionEvent.ACTION_MOVE:
                 float deltaY = ev.getY() - mLastY;//大于0是下拉，小于0是上拉
@@ -340,7 +319,7 @@ public class PullToRefreshView extends ViewGroup{
         if((hideHeaderHeight-getScrollY())>=0){
             mScroller.startScroll(0,getScrollY(),0,hideHeaderHeight-getScrollY());
             invalidate();
-        //下拉高度未达到headerView的高度情况下，并且不是正在刷新的情况下，回弹隐藏headerview
+            //下拉高度未达到headerView的高度情况下，并且不是正在刷新的情况下，回弹隐藏headerview
         }else if(currentStatus != STATUS_REFRESHING){
             mScroller.startScroll(0,getScrollY(),0,-getScrollY());
             invalidate();
@@ -351,12 +330,13 @@ public class PullToRefreshView extends ViewGroup{
         if((getScrollY()-hideFooterHeight)>=0){
             mScroller.startScroll(0,getScrollY(),0,hideFooterHeight-getScrollY());
             invalidate();
-        //上拉高度未达到footerView的高度情况下，并且不是正在加载的情况下，回弹隐藏footerview
+            //上拉高度未达到footerView的高度情况下，并且不是正在加载的情况下，回弹隐藏footerview
         }else if(currentFooterStatus != STATUS_LOADING){
             mScroller.startScroll(0,getScrollY(),0,-getScrollY());
             invalidate();
         }
     }
+
 
     /**
      * 处理下拉的动作
@@ -415,6 +395,7 @@ public class PullToRefreshView extends ViewGroup{
             }
         }
     }
+
 
     private void updateHeaderView() {
         Log.e(TAG,"updateHeaderView()");
@@ -502,6 +483,7 @@ public class PullToRefreshView extends ViewGroup{
         }
     }
 
+
     public void setRefreshCompleted() {
         currentStatus = STATUS_REFRESH_FINISHED;
         mScroller.startScroll(0,getScrollY(),0,-getScrollY());
@@ -576,84 +558,10 @@ public class PullToRefreshView extends ViewGroup{
         footerArrow.startAnimation(animation);
     }
 
+    protected abstract T setRefreshView(Context context,AttributeSet attrs);
 
-    /**
-     * 根据当前View的滚动状态来设定 {@link #isBottom}
-     * 的值，每次都需要在触摸事件中第一个执行，这样可以判断出当前应该是滚动View，还是应该进行上拉。
-     */
-    private void judgeIsBottom() {
-        if (mView instanceof AbsListView) {
-            AbsListView absListView = (AbsListView) mView;
-            //返回的是当前屏幕中的第最后一个子view，非整个列表
-            View lastChild = absListView.getChildAt(absListView.getLastVisiblePosition()-absListView.getFirstVisiblePosition());
-            if (lastChild != null) {
-                int lastVisiblePos = absListView.getLastVisiblePosition();//不必完全可见，当前屏幕中最后一个可见的子view在整个列表的位置
-                if (lastVisiblePos == absListView.getAdapter().getCount()-1 && lastChild.getBottom() == absListView.getMeasuredHeight()-mView.getPaddingBottom()) {
-                    // 如果最后一个元素的下边缘，距离父布局值为view的高度，就说明View滚动到了最底部，此时应该允许上拉加载
-                    isBottom = true;
-                } else {
-                    isBottom = false;
-                }
-            } else {
-                // 如果View中没有元素，也应该允许下拉刷新，但不允许上拉
-                isBottom = false;
-            }
-        } else if (mView instanceof RecyclerView) {
-            RecyclerView recyclerView = (RecyclerView) mView;
-            View lastChild = recyclerView.getLayoutManager().findViewByPosition(recyclerView.getAdapter().getItemCount()-1);//lastChild不必须完全可见
-            View firstVisibleChild = recyclerView.getChildAt(0);//返回的是当前屏幕中的第一个子view，非整个列表
-            if (firstVisibleChild != null) {
-                if (lastChild != null &&
-                        recyclerView.getLayoutManager().getDecoratedBottom(lastChild) == recyclerView.getMeasuredHeight()-mView.getPaddingBottom()) {
-                    isBottom = true;
-                } else {
-                    isBottom = false;
-                }
-            } else {
-                //没有元素也允许刷新，but不允许上拉
-                isBottom = false;
-            }
-        } else {
-            isBottom = true;
-        }
-    }
-    /**
-     * 根据当前View的滚动状态来设定 {@link #isTop}
-     * 的值，每次都需要在触摸事件中第一个执行，这样可以判断出当前应该是滚动View，还是应该进行下拉。
-     */
-    private void judgeIsTop() {
-        if (mView instanceof AbsListView) {
-            AbsListView absListView = (AbsListView) mView;
-            View firstChild = absListView.getChildAt(0);//返回的是当前屏幕中的第一个子view，非整个列表
-            if (firstChild != null) {
-                int firstVisiblePos = absListView.getFirstVisiblePosition();//不必完全可见，当前屏幕中第一个可见的子view在整个列表的位置
-                if (firstVisiblePos == 0 && firstChild.getTop()-mView.getPaddingTop() == 0) {
-                    // 如果首个元素的上边缘，距离父布局值为0，就说明ListView滚动到了最顶部，此时应该允许下拉刷新
-                    isTop = true;
-                } else {
-                    isTop = false;
-                }
-            } else {
-                // 如果ListView中没有元素，也应该允许下拉刷新
-                isTop = true;
-            }
-        } else if (mView instanceof RecyclerView) {
-            RecyclerView recyclerView = (RecyclerView) mView;
-            View firstChild = recyclerView.getLayoutManager().findViewByPosition(0);//firstChild不必须完全可见
-            View firstVisibleChild = recyclerView.getChildAt(0);//返回的是当前屏幕中的第一个子view，非整个列表
-            if (firstVisibleChild != null) {
-                if (firstChild != null && recyclerView.getLayoutManager().getDecoratedTop(firstChild)-mView.getPaddingTop() == 0) {
-                    isTop = true;
-                } else {
-                    isTop = false;
-                }
-            } else {
-                //没有元素也允许刷新
-                isTop = true;
-            }
-        } else {
-            isTop = true;
-        }
+    public T getRefreshView(){
+        return refreshView;
     }
 
     public Mode getMode() {
@@ -693,26 +601,17 @@ public class PullToRefreshView extends ViewGroup{
         /**
          * Disables Pull-to-Refresh gesture handling, but allows manually
          * setting the Refresh state via
-         * {@link #setRefreshing()}.
+         * {@lik #setRefreshing()}.
          */
         MANUAL_REFRESH_ONLY;
     }
 
-    public void setOnRefreshAndLoadMoreListener(PullToRefreshAndPushToLoadMoreListener pListener) {
-        mListener = pListener;
+    public interface RefreshLoadListener {
+        void onRefresh();
+        void onLoadMore();
     }
 
-    /**
-     * 监听器，使用刷新和加载的地方应该注册此监听器来获取刷新回调。
-     */
-    public interface PullToRefreshAndPushToLoadMoreListener {
-        /**
-         * 刷新时会去回调此方法，在方法内编写具体的刷新逻辑。注意此方法是在主线程中调用的， 需要另开线程来进行耗时操作。
-         */
-        void onRefresh();
-        /**
-         * 加载更多时会去回调此方法，在方法内编写具体的加载更多逻辑。注意此方法是在主线程中调用的， 需要另开线程来进行耗时操作。
-         */
-        void onLoadMore();
+    public void setOnRefreshLoadListener(RefreshLoadListener pListener) {
+        mListener = pListener;
     }
 }

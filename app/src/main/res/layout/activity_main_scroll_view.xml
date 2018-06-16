@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.dxp.pulltorefresh.PullToRefreshScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/prsv_scroll_view"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        >
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="500dp"
+            android:background="@android:color/holo_blue_dark"
+            />
+        <com.dxp.view.ImbeddedListView
+            android:id="@+id/lv_listview"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            />
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="500dp"
+            android:background="@color/default_ripple"
+            />
+    </LinearLayout>
+</com.dxp.pulltorefresh.PullToRefreshScrollView>

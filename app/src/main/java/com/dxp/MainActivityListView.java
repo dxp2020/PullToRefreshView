@@ -1,22 +1,23 @@
 package com.dxp;
 
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
-import com.dxp.pulltorefresh.PullToRefreshView;
+import com.dxp.pulltorefresh.PullToRefreshListView;
+import com.dxp.pulltorefresh.base.PullToRefreshBase;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity {
-    ListView lv_listview;
-    PullToRefreshView ptrv_pull_refresh;
+public class MainActivityListView extends AppCompatActivity {
+    private ListView lv_listview;
+    private PullToRefreshListView ptrv_pull_refresh;
     private List<String> data = new ArrayList<>();
     private ArrayAdapter adapter;
     private Handler handler = new Handler(){
@@ -45,10 +46,10 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_main_list_view);
         initData();
         ptrv_pull_refresh = findViewById(R.id.ptrv_pull_refresh);
-        lv_listview = findViewById(R.id.lv_listview);
+        lv_listview = ptrv_pull_refresh.getRefreshView();
         adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1,data);
         lv_listview.setAdapter(adapter);
         lv_listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -57,7 +58,7 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
-        ptrv_pull_refresh.setOnRefreshAndLoadMoreListener(new PullToRefreshView.PullToRefreshAndPushToLoadMoreListener(){
+        ptrv_pull_refresh.setOnRefreshLoadListener(new PullToRefreshBase.RefreshLoadListener(){
             @Override
             public void onRefresh() {
                 handler.sendEmptyMessageDelayed(0,2000);
