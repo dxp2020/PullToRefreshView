@@ -1,2 +1,2 @@
 # PullToRefreshView
-支持ListView、GridView、RecycleView下拉刷新上拉加载
+支持ListView、GridView、RecycleView、ScrollView下拉刷新上拉加载
