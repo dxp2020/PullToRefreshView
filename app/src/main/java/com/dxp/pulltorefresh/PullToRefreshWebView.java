@@ -42,8 +42,8 @@ public class PullToRefreshWebView extends PullToRefreshBase<WebView> {
 
         @Override
         public boolean isScrolledBottom() {
-//          float webcontent = getContentHeight()*getScale();//webview的高度
-//          float webnow = getHeight()+ getScrollY();//当前webview的高度
+            /*float webcontent = getContentHeight()*getScale();//webview的高度
+            float webnow = getHeight()+ getScrollY();//当前webview的高度*/
             if (getContentHeight() * getScale() - (getHeight() + getScrollY()) == 0)
                 return true;
             return false;
