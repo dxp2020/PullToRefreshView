@@ -3,7 +3,8 @@ package com.dxp.utils;
 import android.util.Log;
 import android.view.MotionEvent;
 
-import com.dxp.pulltorefresh.PullToRefreshView;
+import com.dxp.view.PullToRefreshView;
+
 
 public class MotionEventUtils {
     public final static String TAG = "MotionEventUtils";

@@ -32,7 +32,7 @@ public class MainActivityScrollView extends AppCompatActivity {
         prsv_scroll_view = findViewById(R.id.prsv_scroll_view);
         lv_listview = findViewById(R.id.lv_listview);
         initData();
-        adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1,data);
+        adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1,data);
         lv_listview.setAdapter(adapter);
 
         prsv_scroll_view.setOnRefreshLoadListener(new PullToRefreshBase.RefreshLoadListener(){

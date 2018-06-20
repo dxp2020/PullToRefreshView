@@ -21,8 +21,6 @@ import com.dxp.utils.ViewUtils;
 public abstract class PullToRefreshBase<T extends View>  extends ViewGroup {
     private String TAG = "PullToRefreshBase";
 
-    private Context context;
-
     private T refreshView;
 
     private Scroller mScroller;
@@ -179,7 +177,6 @@ public abstract class PullToRefreshBase<T extends View>  extends ViewGroup {
     }
 
     private void init(Context context,AttributeSet attrs) {
-        this.context = context;
         refreshView = setRefreshView(context,attrs);
 
         mScroller = new Scroller(context);

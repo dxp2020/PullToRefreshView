@@ -23,12 +23,16 @@ public class PullToRefreshScrollView extends PullToRefreshBase<ScrollView> {
 
     @Override
     protected ScrollView setRefreshView(Context context,AttributeSet attrs) {
-        View view = getChildAt(0);
+        return new MyScrollView(context,attrs);
+    }
+
+    @Override
+    protected void onAttachedToWindow() {
+        super.onAttachedToWindow();
+        View view = getChildAt(getChildCount()-1);
         removeView(view);
 
-        ScrollView scrollView= new MyScrollView(context,attrs);
-        scrollView.addView(view);
-        return scrollView;
+        getRefreshView().addView(view);
     }
 
     private class MyScrollView extends ScrollView implements ViewDirector{
