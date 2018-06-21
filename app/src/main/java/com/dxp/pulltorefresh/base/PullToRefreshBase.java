@@ -164,6 +164,11 @@ public abstract class PullToRefreshBase<T extends View>  extends ViewGroup {
      */
     private float ratio = DEFAULT_RATIO;
 
+    /**
+     * 上拉、下拉方向
+     */
+    private PullDirection pullDirection = PullDirection.NONE;//考虑到上拉、下拉方向因素，是因为webview中存在isTop、isDown均为true的情况
+
     private int screenHeight;
 
 
@@ -287,24 +292,24 @@ public abstract class PullToRefreshBase<T extends View>  extends ViewGroup {
                 float deltaY = ev.getY() - mLastY;
                 mLastY = ev.getY();
                 if((getScrollY()==0&&(isTop&&deltaY>0))){
-                    handlePullUpAction(deltaY);
+                    handlePullDownAction(deltaY);
                     return true;
                 }else if(getScrollY()<0&&isTop) {
-                    handlePullUpAction(deltaY);
+                    handlePullDownAction(deltaY);
                     return true;
                 }else if((getScrollY()==0&&(isBottom&&deltaY<0))){
-                    handlePullDownAction(deltaY);
+                    handlePullUpAction(deltaY);
                     return true;
                 }else if(getScrollY()>0&&isBottom) {
-                    handlePullDownAction(deltaY);
+                    handlePullUpAction(deltaY);
                     return true;
                 }
                 break;
             case MotionEvent.ACTION_UP:
                 isRelesedFinger = true;
-                if(isTop){
+                if(isTop&&pullDirection==PullDirection.DOWN){
                     handleReleaseUpAction();
-                }else if(isBottom){
+                }else if(isBottom&&pullDirection==PullDirection.UP){
                     handleReleaseDownAction();
                 }
                 break;
@@ -342,7 +347,9 @@ public abstract class PullToRefreshBase<T extends View>  extends ViewGroup {
      * scrollBy 要实现往下移动，y必须为负数
      * @param deltaY
      */
-    private void handlePullUpAction(float deltaY){
+    private void handlePullDownAction(float deltaY){
+        pullDirection = PullDirection.DOWN;
+
         //根据下拉的高度设置阻尼系数
         if(Math.abs(getScrollY())>=-hideHeaderHeight){
             ratio = (1+Math.abs(getScrollY())/(float)screenHeight)*DEFAULT_RATIO;
@@ -356,13 +363,15 @@ public abstract class PullToRefreshBase<T extends View>  extends ViewGroup {
     }
 
     /**
-     * 处理下拉的动作
+     * 处理上拉的动作
      *
      * getScrollY()为正数代表View在往上移动
      * scrollBy 要实现往上移动，y必须为正数
      * @param deltaY
      */
-    private void handlePullDownAction(float deltaY){
+    private void handlePullUpAction(float deltaY){
+        pullDirection = PullDirection.UP;
+
         //根据上拉的高度设置阻尼系数
         if(Math.abs(getScrollY())>=hideFooterHeight){
             ratio = (1+Math.abs(getScrollY())/(float)screenHeight)*DEFAULT_RATIO;
@@ -382,13 +391,14 @@ public abstract class PullToRefreshBase<T extends View>  extends ViewGroup {
             postInvalidate();
         }else{
             if(isRelesedFinger){
-                if(isTop){
+                if(isTop&&pullDirection==PullDirection.DOWN){
                     Log.e(TAG,"computeScroll()--updateHeaderView");
                     updateHeaderView();
-                }else if(isBottom){
+                }else if(isBottom&&pullDirection==PullDirection.UP){
                     Log.e(TAG,"computeScroll()--updateFooterView");
                     updateFooterView();
                 }
+                pullDirection = PullDirection.NONE;
             }
         }
     }
