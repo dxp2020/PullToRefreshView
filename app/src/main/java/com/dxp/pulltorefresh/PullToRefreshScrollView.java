@@ -2,13 +2,11 @@ package com.dxp.pulltorefresh;
 
 import android.content.Context;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.View;
-import android.widget.LinearLayout;
 import android.widget.ScrollView;
 
 import com.dxp.pulltorefresh.base.PullToRefreshBase;
-import com.dxp.pulltorefresh.base.ViewDirector;
+import com.dxp.pulltorefresh.base.ViewOrientation;
 
 public class PullToRefreshScrollView extends PullToRefreshBase<ScrollView> {
     private String TAG = "PullToRefreshScrollView";
@@ -35,7 +33,7 @@ public class PullToRefreshScrollView extends PullToRefreshBase<ScrollView> {
         getRefreshView().addView(view);
     }
 
-    private class MyScrollView extends ScrollView implements ViewDirector{
+    private class MyScrollView extends ScrollView implements ViewOrientation {
 
         public MyScrollView(Context context) {
             super(context);

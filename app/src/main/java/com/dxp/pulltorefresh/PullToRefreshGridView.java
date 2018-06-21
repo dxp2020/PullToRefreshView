@@ -2,13 +2,10 @@ package com.dxp.pulltorefresh;
 
 import android.content.Context;
 import android.util.AttributeSet;
-import android.view.View;
 import android.widget.GridView;
-import android.widget.ListView;
 
 import com.dxp.pulltorefresh.base.PullToRefreshAbsListView;
-import com.dxp.pulltorefresh.base.PullToRefreshBase;
-import com.dxp.pulltorefresh.base.ViewDirector;
+import com.dxp.pulltorefresh.base.ViewOrientation;
 
 public class PullToRefreshGridView extends PullToRefreshAbsListView<GridView> {
     private String TAG = "PullToRefreshGridView";
@@ -26,7 +23,7 @@ public class PullToRefreshGridView extends PullToRefreshAbsListView<GridView> {
         return new MyGridView(context,attrs);
     }
 
-    private class MyGridView extends GridView implements ViewDirector{
+    private class MyGridView extends GridView implements ViewOrientation {
 
         public MyGridView(Context context) {
             super(context);

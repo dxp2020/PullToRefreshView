@@ -1,6 +1,6 @@
 package com.dxp.pulltorefresh.base;
 
-public interface ViewDirector {
+public interface ViewOrientation {
     boolean isScrolledTop();
     boolean isScrolledBottom();
 }

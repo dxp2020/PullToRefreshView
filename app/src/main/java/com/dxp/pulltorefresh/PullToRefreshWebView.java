@@ -2,12 +2,10 @@ package com.dxp.pulltorefresh;
 
 import android.content.Context;
 import android.util.AttributeSet;
-import android.view.View;
 import android.webkit.WebView;
-import android.widget.ScrollView;
 
 import com.dxp.pulltorefresh.base.PullToRefreshBase;
-import com.dxp.pulltorefresh.base.ViewDirector;
+import com.dxp.pulltorefresh.base.ViewOrientation;
 
 public class PullToRefreshWebView extends PullToRefreshBase<WebView> {
     private String TAG = "PullToRefreshWebView";
@@ -25,7 +23,7 @@ public class PullToRefreshWebView extends PullToRefreshBase<WebView> {
         return new MyWebView(context, attrs);
     }
 
-    private class MyWebView extends WebView implements ViewDirector {
+    private class MyWebView extends WebView implements ViewOrientation {
 
         public MyWebView(Context context) {
             super(context);

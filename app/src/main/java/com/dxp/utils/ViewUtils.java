@@ -4,6 +4,7 @@ import android.graphics.Bitmap;
 import android.graphics.Matrix;
 import android.util.Log;
 import android.view.View;
+import android.widget.TextView;
 
 public class ViewUtils {
 
@@ -35,5 +36,11 @@ public class ViewUtils {
         }
         origin.recycle();
         return newBM;
+    }
+
+    public static int getViewWidth(View view){
+        int spec = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED);
+        view.measure(spec, spec);
+        return view.getMeasuredWidth();
     }
 }

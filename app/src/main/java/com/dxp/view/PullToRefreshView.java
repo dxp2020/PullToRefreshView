@@ -204,13 +204,13 @@ public class PullToRefreshView extends ViewGroup{
         mScroller = new Scroller(mContext);
         screenHeight = getResources().getDisplayMetrics().heightPixels;
 
-        header = LayoutInflater.from(mContext).inflate(R.layout.refresh_header2, null, false);
+        header = LayoutInflater.from(mContext).inflate(R.layout.refresh_header, null, false);
         progressBar = header.findViewById(R.id.progress_bar);
         arrow = header.findViewById(R.id.arrow);
         description = header.findViewById(R.id.description);
         arrow.setImageBitmap(BitmapFactory.decodeResource(getResources(),R.mipmap.default_ptr_flip ));
 
-        footer = LayoutInflater.from(mContext).inflate(R.layout.loadmore_footer2, null, false);
+        footer = LayoutInflater.from(mContext).inflate(R.layout.loadmore_footer, null, false);
         footerArrow = footer.findViewById(R.id.iv_footer_arrow);
         footerProgressBar = footer.findViewById(R.id.footer_progress_bar);
         footerDescription = footer.findViewById(R.id.footer_description);

@@ -6,15 +6,17 @@
     android:orientation="horizontal">
 
     <RelativeLayout
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="60dp"
+        android:layout_weight="1"
         >
 
         <ImageView
             android:id="@+id/arrow"
             android:layout_width="40dp"
             android:layout_height="40dp"
-            android:layout_centerInParent="true"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
             />
 
         <ProgressBar
@@ -22,9 +24,10 @@
             android:layout_width="20dp"
             android:layout_height="20dp"
             android:layout_marginRight="10dp"
-            android:layout_centerInParent="true"
             android:indeterminate="true"
             android:indeterminateDrawable="@drawable/loading_process"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
             android:visibility="invisible"
             />
 
@@ -32,9 +35,11 @@
 
     <TextView
         android:id="@+id/description"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:gravity="center"
-        android:text="@string/pull_to_refresh" />
+        android:gravity="left|center_vertical"
+        android:text="@string/pull_to_refresh"
+        android:layout_weight="1"
+        />
 
 </LinearLayout>

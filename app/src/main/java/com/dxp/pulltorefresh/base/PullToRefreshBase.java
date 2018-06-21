@@ -187,13 +187,13 @@ public abstract class PullToRefreshBase<T extends View>  extends ViewGroup {
         mScroller = new Scroller(context);
         screenHeight = getResources().getDisplayMetrics().heightPixels;
 
-        header = LayoutInflater.from(context).inflate(R.layout.refresh_header2, null, false);
+        header = LayoutInflater.from(context).inflate(R.layout.refresh_header, null, false);
         progressBar = header.findViewById(R.id.progress_bar);
         arrow = header.findViewById(R.id.arrow);
         description = header.findViewById(R.id.description);
         arrow.setImageBitmap(BitmapFactory.decodeResource(getResources(),R.mipmap.default_ptr_flip ));
 
-        footer = LayoutInflater.from(context).inflate(R.layout.loadmore_footer2, null, false);
+        footer = LayoutInflater.from(context).inflate(R.layout.loadmore_footer, null, false);
         footerArrow = footer.findViewById(R.id.iv_footer_arrow);
         footerProgressBar = footer.findViewById(R.id.footer_progress_bar);
         footerDescription = footer.findViewById(R.id.footer_description);
@@ -246,13 +246,12 @@ public abstract class PullToRefreshBase<T extends View>  extends ViewGroup {
         if(mode == Mode.DISABLED){
             return false;
         }
-//        MotionEventUtils.println(ev.getAction());
         switch (ev.getAction()){
             case MotionEvent.ACTION_DOWN:
                 isRelesedFinger = false;
                 mLastY = ev.getY();
-                isTop = ((ViewDirector)refreshView).isScrolledTop();
-                isBottom = ((ViewDirector)refreshView).isScrolledBottom();
+                isTop = ((ViewOrientation)refreshView).isScrolledTop();
+                isBottom = ((ViewOrientation)refreshView).isScrolledBottom();
                 break;
             case MotionEvent.ACTION_MOVE:
                 float deltaY = ev.getY() - mLastY;//大于0是下拉，小于0是上拉
@@ -405,25 +404,25 @@ public abstract class PullToRefreshBase<T extends View>  extends ViewGroup {
 
 
     private void updateHeaderView() {
-        Log.e(TAG,"updateHeaderView()");
-
         if(currentStatus==STATUS_REFRESH_FINISHED){
             currentStatus = STATUS_PULL_TO_REFRESH;
             description.setText(getContext().getString(R.string.pull_to_refresh));
             progressBar.setVisibility(View.GONE);
             arrow.setVisibility(View.VISIBLE);
-
+            
         }else if(currentStatus==STATUS_PULL_TO_REFRESH){
             if(Math.abs(getScrollY())>header.getHeight()){
                 description.setText(getContext().getString(R.string.release_to_refresh));
                 currentStatus = STATUS_RELEASE_TO_REFRESH;
                 rotateArrow();
+                
             }
         }else if(currentStatus==STATUS_RELEASE_TO_REFRESH){
             if(Math.abs(getScrollY())<header.getHeight()){
                 description.setText(getContext().getString(R.string.pull_to_refresh));
                 currentStatus = STATUS_PULL_TO_REFRESH;
                 rotateArrow();
+                
             }else if(isRelesedFinger&&getScrollY()==hideHeaderHeight){
                 description.setText(getContext().getString(R.string.refreshing));
                 currentStatus = STATUS_REFRESHING;
@@ -433,6 +432,7 @@ public abstract class PullToRefreshBase<T extends View>  extends ViewGroup {
                 if(mListener!=null){
                     mListener.onRefresh();
                 }
+                
             }
         }else if(currentStatus==STATUS_REFRESHING){
             if(progressBar.getVisibility()==View.GONE
@@ -444,30 +444,32 @@ public abstract class PullToRefreshBase<T extends View>  extends ViewGroup {
                 if(mListener!=null){
                     mListener.onRefresh();
                 }
+                
             }
         }
     }
 
     public void updateFooterView(){
-        Log.e(TAG,"updateHeaderView()");
 
         if(currentFooterStatus==STATUS_LOAD_FINISHED){
             currentFooterStatus = STATUS_LOAD_NORMAL;
             footerDescription.setText(getContext().getString(R.string.load_more_normal));
             footerProgressBar.setVisibility(View.GONE);
             footerArrow.setVisibility(View.VISIBLE);
-
+            
         }else if(currentFooterStatus==STATUS_LOAD_NORMAL){
             if(Math.abs(getScrollY())>=footer.getHeight()){
                 footerDescription.setText(getContext().getString(R.string.load_more_release));
                 currentFooterStatus = STATUS_RELEASE_LOAD;
                 rotateFooterArrow();
+                
             }
         }else if(currentFooterStatus==STATUS_RELEASE_LOAD){
             if(Math.abs(getScrollY())<header.getHeight()){
                 footerDescription.setText(getContext().getString(R.string.load_more_normal));
                 currentFooterStatus = STATUS_LOAD_NORMAL;
                 rotateFooterArrow();
+                
             }else if(isRelesedFinger&&getScrollY()==hideFooterHeight){
                 currentFooterStatus = STATUS_LOADING;
                 setLoadingView();
@@ -487,6 +489,7 @@ public abstract class PullToRefreshBase<T extends View>  extends ViewGroup {
             if(mListener!=null){
                 mListener.onLoadMore();
             }
+            
         }
     }
 

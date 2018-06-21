@@ -5,11 +5,9 @@ import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.view.View;
-import android.widget.GridView;
 
-import com.dxp.pulltorefresh.base.PullToRefreshAbsListView;
 import com.dxp.pulltorefresh.base.PullToRefreshBase;
-import com.dxp.pulltorefresh.base.ViewDirector;
+import com.dxp.pulltorefresh.base.ViewOrientation;
 
 public class PullToRefreshRecycleView extends PullToRefreshBase<RecyclerView> {
     private String TAG = "PullToRefreshRecycleView";
@@ -27,7 +25,7 @@ public class PullToRefreshRecycleView extends PullToRefreshBase<RecyclerView> {
         return new MyRecyclerView(context,attrs);
     }
 
-    private class MyRecyclerView extends RecyclerView implements ViewDirector{
+    private class MyRecyclerView extends RecyclerView implements ViewOrientation {
 
         public MyRecyclerView(Context context) {
             super(context);
