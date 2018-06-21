@@ -25,7 +25,7 @@
             android:layout_height="20dp"
             android:layout_marginRight="10dp"
             android:indeterminate="true"
-            android:indeterminateDrawable="@drawable/loading_process"
+            android:indeterminateDrawable="@drawable/anim_progresss_bar"
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
             android:visibility="invisible"
