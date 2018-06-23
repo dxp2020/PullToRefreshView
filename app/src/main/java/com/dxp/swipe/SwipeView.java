@@ -160,7 +160,7 @@ public class SwipeView extends ViewGroup {
         switch (ev.getAction()){
             case MotionEvent.ACTION_MOVE:
                 float deltaX = ev.getX()-mLastX;
-                mLastY = ev.getY();
+                mLastX = ev.getX();
                 //只往左滑
                 if(swipeDirection==SwipeDirection.LEFT){
                     moveRightMenu(deltaX);
@@ -233,7 +233,6 @@ public class SwipeView extends ViewGroup {
      */
     private void moveLeftMenu(float deltaX) {
         swipeStatus = SwipeDirection.LEFT;
-        deltaX/=4;//添加阻尼系数
         //右滑
         if(deltaX>0){
             float distance = swipeMenuWidth + getScrollX();
@@ -262,7 +261,6 @@ public class SwipeView extends ViewGroup {
      */
     private void moveRightMenu(float deltaX) {
         swipeStatus = SwipeDirection.RIGHT;
-        deltaX/=4;//添加阻尼系数
         //左滑
         if(deltaX<0){
             float distance = swipeMenuWidth - getScrollX();
