@@ -18,11 +18,12 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".MainActivityListView"/>
-        <activity android:name=".MainActivityGridView"/>
-        <activity android:name=".MainActivityRecycleView"/>
-        <activity android:name=".MainActivityScrollView"/>
-        <activity android:name=".MainActivityWebView"/>
+        <activity android:name=".activity.MainActivityListView"/>
+        <activity android:name=".activity.MainActivityGridView"/>
+        <activity android:name=".activity.MainActivityRecycleView"/>
+        <activity android:name=".activity.MainActivityScrollView"/>
+        <activity android:name=".activity.MainActivityWebView"/>
+        <activity android:name=".activity.MainActivitySwipeView"/>
 
 
     </application>

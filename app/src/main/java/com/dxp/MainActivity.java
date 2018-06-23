@@ -8,6 +8,13 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
+import com.dxp.activity.MainActivityGridView;
+import com.dxp.activity.MainActivityListView;
+import com.dxp.activity.MainActivityRecycleView;
+import com.dxp.activity.MainActivityScrollView;
+import com.dxp.activity.MainActivitySwipeView;
+import com.dxp.activity.MainActivityWebView;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,6 +33,7 @@ public class MainActivity extends Activity {
         data.add("RecycleView");
         data.add("ScrollView");
         data.add("WebView");
+        data.add("进入左滑删除测试页");
 
         lv_listview = findViewById(R.id.lv_listview);
         adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1,data);
@@ -48,6 +56,9 @@ public class MainActivity extends Activity {
                         break;
                     case 4:
                         startActivity(new Intent(MainActivity.this,MainActivityWebView.class));
+                        break;
+                    case 5:
+                        startActivity(new Intent(MainActivity.this,MainActivitySwipeView.class));
                         break;
                 }
             }

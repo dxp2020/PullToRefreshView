@@ -1,4 +1,4 @@
-package com.dxp;
+package com.dxp.activity;
 
 import android.os.Bundle;
 import android.os.Handler;
@@ -10,6 +10,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
+import com.dxp.R;
 import com.dxp.pulltorefresh.PullToRefreshListView;
 import com.dxp.pulltorefresh.PullToRefreshWebView;
 import com.dxp.pulltorefresh.base.PullToRefreshBase;

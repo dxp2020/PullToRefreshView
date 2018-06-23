@@ -1,31 +1,26 @@
-package com.dxp;
+package com.dxp.activity;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.ListView;
-import android.widget.TextView;
+import android.widget.GridView;
 
-import com.dxp.pulltorefresh.PullToRefreshListView;
-import com.dxp.pulltorefresh.PullToRefreshRecycleView;
+import com.dxp.R;
+import com.dxp.pulltorefresh.PullToRefreshGridView;
 import com.dxp.pulltorefresh.base.PullToRefreshBase;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivityRecycleView extends AppCompatActivity {
-    private RecyclerView lv_listview;
-    private PullToRefreshRecycleView ptrv_pull_refresh;
+public class MainActivityGridView extends AppCompatActivity {
+    private GridView lv_listview;
+    private PullToRefreshGridView ptrv_pull_refresh;
     private List<String> data = new ArrayList<>();
-    private DemoAdapter adapter;
+    private ArrayAdapter adapter;
 
     private Handler handler = new Handler(){
         @Override
@@ -53,56 +48,28 @@ public class MainActivityRecycleView extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main_recycle_view);
+        setContentView(R.layout.activity_main_grid_view);
         initData();
         ptrv_pull_refresh = findViewById(R.id.ptrv_pull_refresh);
         lv_listview = ptrv_pull_refresh.getRefreshView();
-        lv_listview.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
-        adapter = new DemoAdapter(this);
+        adapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1,data);
         lv_listview.setAdapter(adapter);
+        lv_listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
+            }
+        });
         ptrv_pull_refresh.setOnRefreshLoadListener(new PullToRefreshBase.RefreshLoadListener(){
             @Override
             public void onRefresh() {
                 handler.sendEmptyMessageDelayed(0,2000);
             }
+
             @Override
             public void onLoadMore() {
                 handler.sendEmptyMessageDelayed(1,2000);
             }
         });
-    }
-
-    public class DemoAdapter extends RecyclerView.Adapter<DemoAdapter.VH> {
-
-        private Context context;
-
-        public DemoAdapter(Context context) {
-            this.context = context;
-        }
-
-        @Override
-        public VH onCreateViewHolder(ViewGroup parent, int viewType) {
-            return new VH(View.inflate(context, android.R.layout.simple_list_item_1, null));
-        }
-
-        @Override
-        public void onBindViewHolder(VH holder, int position) {
-            holder.mTextView.setText(data.get(position));
-        }
-
-        @Override
-        public int getItemCount() {
-            return data.size();
-        }
-
-        public  class VH extends RecyclerView.ViewHolder {
-            TextView mTextView;
-
-            public VH(View itemView) {
-                super(itemView);
-                mTextView = itemView.findViewById(android.R.id.text1);
-            }
-        }
     }
 }
