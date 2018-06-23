@@ -1,4 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+    <declare-styleable name = "SwipeViewLayout">
+        <attr name = "swipe_direction" format = "string" />
+    </declare-styleable>
+
+
 </resources>
