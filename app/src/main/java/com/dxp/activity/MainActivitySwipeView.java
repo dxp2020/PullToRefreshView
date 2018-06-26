@@ -19,30 +19,36 @@ import com.dxp.swipe.SwipeView;
 
 public class MainActivitySwipeView extends AppCompatActivity {
     private LinearLayout ll_container;
+    private SwipeView swipeView;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_swipe_view);
         ll_container = findViewById(R.id.ll_container);
-        SwipeView swipeView = new SwipeView(this, View.inflate(this,R.layout.layout_swipe_view_item,null));
+        swipeView = new SwipeView(this, View.inflate(this,R.layout.layout_swipe_view_item,null));
         ll_container.addView(swipeView);
 
         swipeView.addRightMenu(getSwipeMenu());
         swipeView.addLeftMenu(getSwipeMenu());
-        swipeView.setSwipeDirection(SwipeDirection.BOTH);
-
+        swipeView.setSwipeDirection(SwipeDirection.LEFT);
 
         swipeView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(MainActivitySwipeView.this,"click swipeView",Toast.LENGTH_SHORT).show();
+                if(swipeView.getTag()==null){
+                    swipeView.setTag("");
+                    swipeView.smoothOpenMenu();
+                }else{
+                    swipeView.setTag(null);
+                    swipeView.smoothCloseMenu();
+                }
             }
         });
-
     }
 
     private SwipeMenu getSwipeMenu() {
         SwipeMenu swipeMenu = new SwipeMenu(this);
+        swipeMenu.addMenuItem(getSwipeMenuItem());
         swipeMenu.addMenuItem(getSwipeMenuItem());
         return swipeMenu;
     }

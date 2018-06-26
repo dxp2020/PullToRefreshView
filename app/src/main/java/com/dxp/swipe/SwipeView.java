@@ -157,14 +157,14 @@ public class SwipeView extends ViewGroup{
                 }else if(swipeStatus == SwipeDirection.LEFT){
                     if(Math.abs(getScrollX())<getRightMenuWidth()/2){
                         mScroller.startScroll(getScrollX(),0,-getScrollX(),0);
-                    }else if(Math.abs(getScrollX())>getRightMenuWidth()/2){
+                    }else if(Math.abs(getScrollX())>=getRightMenuWidth()/2){
                         mScroller.startScroll(getScrollX(),0,getRightMenuWidth()-getScrollX(),0);
                     }
                     invalidate();
                 }else if(swipeStatus == SwipeDirection.RIGHT){
                     if(Math.abs(getScrollX())<getLeftMenuWidth()/2){
                         mScroller.startScroll(getScrollX(),0,-getScrollX(),0);
-                    }else if(Math.abs(getScrollX())>getLeftMenuWidth()/2){
+                    }else if(Math.abs(getScrollX())>=getLeftMenuWidth()/2){
                         mScroller.startScroll(getScrollX(),0,-(getLeftMenuWidth()+getScrollX()),0);
                     }
                     invalidate();
@@ -267,6 +267,7 @@ public class SwipeView extends ViewGroup{
     public void addLeftMenu(SwipeMenu leftMenu) {
         swipeDirection=SwipeDirection.RIGHT;
         this.leftMenu = leftMenu;
+        this.leftMenu.setSwipeView(this);
         addView(leftMenu,getChildCount());
         requestLayout();
     }
@@ -274,6 +275,7 @@ public class SwipeView extends ViewGroup{
     public void addRightMenu(SwipeMenu rightMenu) {
         swipeDirection=SwipeDirection.LEFT;
         this.rightMenu = rightMenu;
+        this.rightMenu.setSwipeView(this);
         addView(rightMenu,getChildCount());
         requestLayout();
     }
@@ -285,6 +287,27 @@ public class SwipeView extends ViewGroup{
             swipeDirection=SwipeDirection.RIGHT;
         }else if(leftMenu!=null&&rightMenu!=null&&mSwipeDirection==SwipeDirection.BOTH){
             swipeDirection=SwipeDirection.BOTH;
+        }
+    }
+
+    public void smoothCloseMenu(){
+        if(leftMenu.isOpen()||rightMenu.isOpen()){
+            mScroller.startScroll(getScrollX(),0,-getScrollX(),0);
+            invalidate();
+        }
+    }
+
+    public void smoothOpenMenu() {
+        if(rightMenu!=null&&(swipeDirection==SwipeDirection.LEFT||swipeDirection==SwipeDirection.BOTH)){
+            if(!rightMenu.isOpen()){
+                mScroller.startScroll(getScrollX(),0,getRightMenuWidth()-getScrollX(),0);
+                invalidate();
+            }
+        }else if(leftMenu!=null&&(swipeDirection==SwipeDirection.RIGHT)){
+            if(!leftMenu.isOpen()){
+                mScroller.startScroll(getScrollX(),0,-(getLeftMenuWidth()+getScrollX()),0);
+                invalidate();
+            }
         }
     }
 

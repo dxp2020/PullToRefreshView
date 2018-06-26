@@ -12,6 +12,7 @@ import android.widget.TextView;
 
 public class SwipeMenu extends LinearLayout implements View.OnClickListener{
     private OnSwipeItemClickListener onItemClickListener;
+    private SwipeView swipeView;
 
     public SwipeMenu(Context context) {
         this(context,null);
@@ -68,8 +69,16 @@ public class SwipeMenu extends LinearLayout implements View.OnClickListener{
         }
     }
 
+    public void setSwipeView(SwipeView swipeView) {
+        this.swipeView = swipeView;
+    }
+
     public interface OnSwipeItemClickListener {
         void onItemClick(int index);
+    }
+
+    public boolean isOpen() {
+        return Math.abs(swipeView.getScrollX())==getMeasuredWidth();
     }
 
 }
