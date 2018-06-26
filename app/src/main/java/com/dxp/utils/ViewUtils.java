@@ -43,4 +43,10 @@ public class ViewUtils {
         view.measure(spec, spec);
         return view.getMeasuredWidth();
     }
+
+    public static int getViewHeight(View view){
+        int spec = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED);
+        view.measure(spec, spec);
+        return view.getMeasuredHeight();
+    }
 }

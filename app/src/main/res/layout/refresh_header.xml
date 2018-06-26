@@ -1,7 +1,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="60dp"
+    android:layout_height="match_parent"
     android:gravity="center"
     android:orientation="horizontal">
 
@@ -33,13 +33,19 @@
 
     </RelativeLayout>
 
-    <TextView
-        android:id="@+id/description"
+    <RelativeLayout
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:gravity="left|center_vertical"
-        android:text="@string/pull_to_refresh"
+        android:layout_height="60dp"
         android:layout_weight="1"
-        />
+        >
+        <TextView
+            android:id="@+id/description"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="left|center_vertical"
+            android:text="@string/pull_to_refresh"
+            android:layout_alignParentLeft="true"
+            />
+    </RelativeLayout>
 
 </LinearLayout>
