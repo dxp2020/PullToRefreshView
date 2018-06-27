@@ -10,6 +10,8 @@ public abstract class SwipeListAdapter implements ListAdapter{
 
     private Context mContext;
     private ListAdapter mAdapter;
+    private SwipeView mLastOpenedView;
+    private int openedPosition = -1;
 
     public SwipeListAdapter(Context mContext, ListAdapter mAdapter) {
         this.mContext = mContext;
@@ -25,6 +27,30 @@ public abstract class SwipeListAdapter implements ListAdapter{
             view.addRightMenu(createRightMenu());
         }else{
             view = (SwipeView) convertView;
+        }
+        view.setPosition(position);
+
+        view.setOnOpenedMenuListener(new SwipeView.OnOpenedMenuListener(){
+            @Override
+            public void startOpen(SwipeView view) {
+                if(mLastOpenedView==null){
+                    mLastOpenedView = view;
+                }else if(mLastOpenedView !=  view){
+                    if(mLastOpenedView.isOpen()){
+                        mLastOpenedView.smoothCloseMenu();
+                    }
+                    mLastOpenedView = view;
+                }
+            }
+            @Override
+            public void onOpened() {
+                openedPosition = mLastOpenedView.getPosition();//滑动时因为复用，存在被调用的情况，待修复
+            }
+        });
+
+        if(openedPosition==position){
+            view.openMenu();
+        }else{
             view.closeMenu();
         }
         return view;

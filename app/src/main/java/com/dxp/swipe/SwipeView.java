@@ -9,6 +9,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Scroller;
 
+import com.dxp.utils.MotionEventUtils;
+
 public class SwipeView extends ViewGroup{
     private String TAG = "SwipeView";
 
@@ -47,7 +49,8 @@ public class SwipeView extends ViewGroup{
     private View contentView;
     private SwipeMenu rightMenu;
     private SwipeMenu leftMenu;
-
+    private OnOpenedMenuListener mOnOpenedMenuListener;
+    private int position=-1;
 
     public SwipeView(Context context,View contentView) {
         super(context);
@@ -155,6 +158,7 @@ public class SwipeView extends ViewGroup{
                     }
                 }
                 return true;
+            case MotionEvent.ACTION_CANCEL:
             case MotionEvent.ACTION_UP:
                 isRelesedFinger = true;
                 //添加回弹效果
@@ -188,6 +192,9 @@ public class SwipeView extends ViewGroup{
         }else{
             if(isRelesedFinger){
                 swipeStatus = null;
+                if(mOnOpenedMenuListener!=null&&isOpen()){
+                    mOnOpenedMenuListener.onOpened();
+                }
             }
         }
     }
@@ -218,6 +225,9 @@ public class SwipeView extends ViewGroup{
                 scrollBy((int) distance, 0);
             }
         }
+        if(mOnOpenedMenuListener!=null){
+            mOnOpenedMenuListener.startOpen(this);
+        }
     }
 
     /**
@@ -245,6 +255,9 @@ public class SwipeView extends ViewGroup{
             }else{
                 scrollBy((int) -distance, 0);
             }
+        }
+        if(mOnOpenedMenuListener!=null){
+            mOnOpenedMenuListener.startOpen(this);
         }
     }
 
@@ -331,9 +344,24 @@ public class SwipeView extends ViewGroup{
         }
     }
 
+    public boolean isOpen(){
+        if(leftMenu.isOpen()||rightMenu.isOpen()){
+            return true;
+        }
+        return false;
+    }
+
     public void closeMenu() {
         //scrollBy x为正，则内容往左移，x为负内容往右移
         scrollBy(-getScrollX(), 0);
+    }
+
+    public void openMenu(){
+        if((swipeDirection==SwipeDirection.LEFT||swipeDirection==SwipeDirection.BOTH)){
+            scrollBy(-getRightMenuWidth(), 0);
+        }else{
+            scrollBy(getLeftMenuWidth(), 0);
+        }
     }
 
     private int dp2px(int dp) {
@@ -349,6 +377,27 @@ public class SwipeView extends ViewGroup{
 
     public View getContentView() {
         return contentView;
+    }
+
+    public interface OnOpenedMenuListener{
+        void startOpen(SwipeView view);
+        void onOpened();
+    }
+
+    public OnOpenedMenuListener getOnOpenedMenuListener() {
+        return mOnOpenedMenuListener;
+    }
+
+    public void setOnOpenedMenuListener(OnOpenedMenuListener mOnOpenedMenuListener) {
+        this.mOnOpenedMenuListener = mOnOpenedMenuListener;
+    }
+
+    public int getPosition() {
+        return position;
+    }
+
+    public void setPosition(int position) {
+        this.position = position;
     }
 
     //        TypedArray a = context.getTheme().obtainStyledAttributes(attrs,R.styleable.SwipeViewLayout, 0, 0);
