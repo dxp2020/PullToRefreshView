@@ -245,7 +245,7 @@ public abstract class PullToRefreshBase<T extends View>  extends ViewGroup {
     @Override
     public boolean onInterceptTouchEvent(MotionEvent ev) {
         MotionEventUtils.println(ev.getAction());
-        if(mode == Mode.DISABLED){
+        if(mode == Mode.DISABLED||mScroller.computeScrollOffset()){
             return false;
         }
         switch (ev.getAction()){
