@@ -2,18 +2,25 @@ package com.dxp.swipe;
 
 import android.content.Context;
 import android.database.DataSetObserver;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListAdapter;
+import android.widget.ListView;
+
+import java.util.List;
 
 public abstract class SwipeListAdapter implements ListAdapter{
+    private String TAG = "SwipeListAdapter";
 
     private Context mContext;
+    private SwipeListView mListView;
     private ListAdapter mAdapter;
-    private SwipeView mLastOpenedView;
     private int openedPosition = -1;
+    private SwipeDirection openedItemSwipeDirection;
 
-    public SwipeListAdapter(Context mContext, ListAdapter mAdapter) {
+    public SwipeListAdapter(SwipeListView mListView,Context mContext, ListAdapter mAdapter) {
+        this.mListView = mListView;
         this.mContext = mContext;
         this.mAdapter = mAdapter;
     }
@@ -28,28 +35,35 @@ public abstract class SwipeListAdapter implements ListAdapter{
         }else{
             view = (SwipeView) convertView;
         }
+        view.setSwipeDirection(mListView.getSwipeDirection());
         view.setPosition(position);
 
         view.setOnOpenedMenuListener(new SwipeView.OnOpenedMenuListener(){
             @Override
             public void startOpen(SwipeView view) {
-                if(mLastOpenedView==null){
-                    mLastOpenedView = view;
-                }else if(mLastOpenedView !=  view){
-                    if(mLastOpenedView.isOpen()){
-                        mLastOpenedView.smoothCloseMenu();
+                if(openedPosition!=-1&&openedPosition !=  view.getPosition()){
+                    View childView = mListView.getChildAt(openedPosition - mListView.getFirstVisiblePosition());
+                    if(childView instanceof SwipeView){
+                        ((SwipeView) childView).smoothCloseMenu();
                     }
-                    mLastOpenedView = view;
+                    openedPosition = -1;
+                    openedItemSwipeDirection = null;
                 }
             }
             @Override
-            public void onOpened() {
-                openedPosition = mLastOpenedView.getPosition();//滑动时因为复用，存在被调用的情况，待修复
+            public void onOpened(SwipeView view) {
+                openedPosition = view.getPosition();
+                openedItemSwipeDirection = view.getOpendMenuDirection();
+            }
+            @Override
+            public void onClosed(SwipeView view) {
+                openedPosition = -1;
+                openedItemSwipeDirection = null;
             }
         });
 
         if(openedPosition==position){
-            view.openMenu();
+            view.openMenu(openedItemSwipeDirection);
         }else{
             view.closeMenu();
         }

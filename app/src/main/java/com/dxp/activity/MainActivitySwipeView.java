@@ -64,9 +64,10 @@ public class MainActivitySwipeView extends AppCompatActivity {
         setContentView(R.layout.activity_main_swipe_view);
         lv_swipe_list = findViewById(R.id.lv_swipe_list);
         initData();
-        lv_listview = lv_swipe_list.getRefreshView();
         adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1,data);
+        lv_listview = lv_swipe_list.getRefreshView();
         lv_listview.setAdapter(adapter);
+        lv_listview.setSwipeDirection(SwipeDirection.BOTH);
         lv_listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -96,6 +97,7 @@ public class MainActivitySwipeView extends AppCompatActivity {
                 return getSwipeMenu();
             }
         });
+
 
 //        ll_container = findViewById(R.id.ll_container);
 //        swipeView = new SwipeView(this, View.inflate(this,R.layout.layout_swipe_view_item,null));

@@ -16,6 +16,7 @@ import android.widget.Scroller;
 import android.widget.TextView;
 
 import com.dxp.R;
+import com.dxp.utils.MotionEventUtils;
 import com.dxp.utils.ViewUtils;
 
 public abstract class PullToRefreshBase<T extends View>  extends ViewGroup {
@@ -243,6 +244,7 @@ public abstract class PullToRefreshBase<T extends View>  extends ViewGroup {
 
     @Override
     public boolean onInterceptTouchEvent(MotionEvent ev) {
+        MotionEventUtils.println(ev.getAction());
         if(mode == Mode.DISABLED){
             return false;
         }
@@ -286,6 +288,7 @@ public abstract class PullToRefreshBase<T extends View>  extends ViewGroup {
 
     @Override
     public boolean onTouchEvent(MotionEvent ev) {
+        MotionEventUtils.println(ev.getAction(),isTop+"",isBottom+"",getScrollY()+"");
         switch (ev.getAction()){
             case MotionEvent.ACTION_MOVE:
                 float deltaY = ev.getY() - mLastY;
@@ -306,6 +309,7 @@ public abstract class PullToRefreshBase<T extends View>  extends ViewGroup {
                 break;
             case MotionEvent.ACTION_UP:
                 isRelesedFinger = true;
+                //考虑到上拉、下拉方向因素，是因为webview中存在isTop、isDown均为true的情况
                 if(isTop&&pullDirection==PullDirection.DOWN){
                     handleReleaseUpAction();
                 }else if(isBottom&&pullDirection==PullDirection.UP){
@@ -389,6 +393,7 @@ public abstract class PullToRefreshBase<T extends View>  extends ViewGroup {
             scrollTo(mScroller.getCurrX(), mScroller.getCurrY());
             postInvalidate();
         }else{
+            Log.e(TAG,"omputeScroll()");
             if(isRelesedFinger){
                 if(isTop&&pullDirection==PullDirection.DOWN){
                     Log.e(TAG,"computeScroll()--updateHeaderView");
@@ -415,7 +420,15 @@ public abstract class PullToRefreshBase<T extends View>  extends ViewGroup {
                 description.setText(getContext().getString(R.string.release_to_refresh));
                 currentStatus = STATUS_RELEASE_TO_REFRESH;
                 rotateArrow();
-                
+            }else if(isRelesedFinger&&getScrollY()==hideHeaderHeight){
+                description.setText(getContext().getString(R.string.refreshing));
+                currentStatus = STATUS_REFRESHING;
+                progressBar.setVisibility(View.VISIBLE);
+                arrow.clearAnimation();
+                arrow.setVisibility(View.GONE);
+                if(mListener!=null){
+                    mListener.onRefresh();
+                }
             }
         }else if(currentStatus==STATUS_RELEASE_TO_REFRESH){
             if(Math.abs(getScrollY())<header.getHeight()){
@@ -432,7 +445,6 @@ public abstract class PullToRefreshBase<T extends View>  extends ViewGroup {
                 if(mListener!=null){
                     mListener.onRefresh();
                 }
-                
             }
         }else if(currentStatus==STATUS_REFRESHING){
             if(progressBar.getVisibility()==View.GONE

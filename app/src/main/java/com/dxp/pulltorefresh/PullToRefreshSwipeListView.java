@@ -6,6 +6,7 @@ import android.widget.ListView;
 
 import com.dxp.pulltorefresh.base.PullToRefreshAbsListView;
 import com.dxp.pulltorefresh.base.ViewOrientation;
+import com.dxp.swipe.SwipeDirection;
 import com.dxp.swipe.SwipeListView;
 
 public class PullToRefreshSwipeListView extends PullToRefreshAbsListView<SwipeListView> {
