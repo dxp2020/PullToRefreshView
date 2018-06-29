@@ -71,7 +71,7 @@ public class MainActivitySwipeView extends AppCompatActivity {
         lv_listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
+                Toast.makeText(MainActivitySwipeView.this,"click-->"+position,Toast.LENGTH_SHORT).show();
             }
         });
         lv_swipe_list.setOnRefreshLoadListener(new PullToRefreshBase.RefreshLoadListener(){

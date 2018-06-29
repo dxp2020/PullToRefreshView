@@ -50,21 +50,31 @@ public class SwipeView extends ViewGroup{
     private SwipeMenu rightMenu;
     private SwipeMenu leftMenu;
     private OnOpenedMenuListener mOnOpenedMenuListener;
+    private OnClickListener mOnClickListener;
     private int position=-1;
 
     public SwipeView(Context context,View contentView) {
         super(context);
         this.contentView = contentView;
-        init(context);
+        init(context,null);
     }
 
-    private void init(Context context) {
+    public SwipeView(Context context,View contentView,OnClickListener pOnClickListener) {
+        super(context);
+        this.contentView = contentView;
+        init(context,pOnClickListener);
+    }
+
+    private void init(Context context,final OnClickListener pOnClickListener) {
         mScroller = new Scroller(context);
         addView(contentView);
-        contentView.setOnTouchListener(new OnTouchListener() {
+
+        contentView.setOnClickListener(new View.OnClickListener() {
             @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                return true;
+            public void onClick(View v) {
+                if(pOnClickListener!=null){
+                    pOnClickListener.onClick(SwipeView.this);
+                }
             }
         });
     }
@@ -337,7 +347,7 @@ public class SwipeView extends ViewGroup{
         scrollBy(-getScrollX(), 0);
     }
 
-    public void openMenu(SwipeDirection pSwipeDirection){
+    protected void openMenu(SwipeDirection pSwipeDirection){
         if(pSwipeDirection==SwipeDirection.LEFT){
             scrollBy(getRightMenuWidth(), 0);
         }else{
@@ -351,19 +361,9 @@ public class SwipeView extends ViewGroup{
     }
 
     @Override
-    public void setOnClickListener(@Nullable OnClickListener l) {
+    public void setOnClickListener(@Nullable View.OnClickListener l) {
         contentView.setOnClickListener(l);
         contentView.setOnTouchListener(null);
-    }
-
-    public interface OnOpenedMenuListener{
-        void startOpen(SwipeView view);
-        void onOpened(SwipeView view);
-        void onClosed(SwipeView view);
-    }
-
-    public void setOnOpenedMenuListener(OnOpenedMenuListener mOnOpenedMenuListener) {
-        this.mOnOpenedMenuListener = mOnOpenedMenuListener;
     }
 
     private void notifyOpened(){
@@ -407,6 +407,20 @@ public class SwipeView extends ViewGroup{
 
     public void setPosition(int position) {
         this.position = position;
+    }
+
+    public interface OnClickListener{
+        void onClick(SwipeView view);
+    }
+
+    public interface OnOpenedMenuListener{
+        void startOpen(SwipeView view);
+        void onOpened(SwipeView view);
+        void onClosed(SwipeView view);
+    }
+
+    public void setOnOpenedMenuListener(OnOpenedMenuListener mOnOpenedMenuListener) {
+        this.mOnOpenedMenuListener = mOnOpenedMenuListener;
     }
 
 //        TypedArray a = context.getTheme().obtainStyledAttributes(attrs,R.styleable.SwipeViewLayout, 0, 0);

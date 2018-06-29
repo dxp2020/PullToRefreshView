@@ -33,7 +33,7 @@ public class MainActivity extends Activity {
         data.add("RecycleView");
         data.add("ScrollView");
         data.add("WebView");
-        data.add("进入左滑删除测试页");
+        data.add("SwipeListView");
 
         lv_listview = findViewById(R.id.lv_listview);
         adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1,data);

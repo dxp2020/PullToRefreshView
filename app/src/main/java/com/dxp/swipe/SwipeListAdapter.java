@@ -29,7 +29,12 @@ public abstract class SwipeListAdapter implements ListAdapter{
     public View getView(int position, View convertView, ViewGroup parent) {
         SwipeView view = null;
         if(convertView==null){
-            view = new SwipeView(mContext, mAdapter.getView(position,convertView,parent));
+            view = new SwipeView(mContext, mAdapter.getView(position, convertView, parent), new SwipeView.OnClickListener() {
+                @Override
+                public void onClick(SwipeView view) {
+                    mListView.getOnItemClickListener().onItemClick(mListView,view,view.getPosition(),getItemId(view.getPosition()));
+                }
+            });
             view.addLeftMenu(createLeftMenu());
             view.addRightMenu(createRightMenu());
         }else{

@@ -202,7 +202,7 @@ public abstract class PullToRefreshBase<T extends View>  extends ViewGroup {
 
         touchSlop = ViewConfiguration.get(context).getScaledTouchSlop();
 
-        //放在onAttachedToWindow中添加也可以，在onAttachedToWindow可以获取到ViewGroup的child数量
+        //在onAttachedToWindow才可以获取到ViewGroup的child数量
         addView(header);
         addView(refreshView,new LayoutParams(LayoutParams.MATCH_PARENT,LayoutParams.MATCH_PARENT));
         addView(footer);

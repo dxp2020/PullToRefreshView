@@ -2,6 +2,7 @@ package com.dxp.swipe;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.widget.ListAdapter;
@@ -13,6 +14,7 @@ public class SwipeListView extends ListView{
     private Context mContext;
     private SwipeMenuCreator mSwipeMenuCreator;
     private SwipeDirection mSwipeDirection;
+    private boolean isSetItemClick = false;
 
     public SwipeListView(Context context) {
         this(context,null);
@@ -43,14 +45,6 @@ public class SwipeListView extends ListView{
         });
     }
 
-    public SwipeMenuCreator getSwipeMenuCreator() {
-        return mSwipeMenuCreator;
-    }
-
-    public void setSwipeMenuCreator(SwipeMenuCreator mSwipeMenuCreator) {
-        this.mSwipeMenuCreator = mSwipeMenuCreator;
-    }
-
     /**
      * 屏蔽掉多手指触控，避免打开多个item的menu
      * @param ev
@@ -65,11 +59,38 @@ public class SwipeListView extends ListView{
         return super.onInterceptTouchEvent(ev);
     }
 
+    /**
+     * Register a callback to be invoked when an item in this AdapterView has
+     * been clicked.
+     *
+     * @param listener The callback that will be invoked.
+     */
+    public void setOnItemClickListener(@Nullable OnItemClickListener listener) {
+        super.setOnItemClickListener(listener);
+        if(listener!=null){
+            isSetItemClick = true;
+        }else{
+            isSetItemClick = false;
+        }
+    }
+
+    public SwipeMenuCreator getSwipeMenuCreator() {
+        return mSwipeMenuCreator;
+    }
+
+    public void setSwipeMenuCreator(SwipeMenuCreator mSwipeMenuCreator) {
+        this.mSwipeMenuCreator = mSwipeMenuCreator;
+    }
+
     public void setSwipeDirection(SwipeDirection pSwipeDirection) {
         mSwipeDirection = pSwipeDirection;
     }
 
     public SwipeDirection getSwipeDirection() {
         return mSwipeDirection;
+    }
+
+    public boolean isSetItemClick() {
+        return isSetItemClick;
     }
 }
