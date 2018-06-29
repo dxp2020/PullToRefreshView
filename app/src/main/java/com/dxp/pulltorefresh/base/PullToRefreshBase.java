@@ -14,8 +14,10 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.Scroller;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.dxp.R;
+import com.dxp.activity.MainActivityListView;
 import com.dxp.utils.MotionEventUtils;
 import com.dxp.utils.ViewUtils;
 
@@ -159,6 +161,11 @@ public abstract class PullToRefreshBase<T extends View>  extends ViewGroup {
      */
     private boolean isRelesedFinger = true;
 
+    /**
+     * 是否正在滚动
+     */
+    private boolean isScrolling = false;
+
     private static final float DEFAULT_RATIO = 2f;
     /**
      * 拖动阻力系数
@@ -244,7 +251,7 @@ public abstract class PullToRefreshBase<T extends View>  extends ViewGroup {
 
     @Override
     public boolean onInterceptTouchEvent(MotionEvent ev) {
-        MotionEventUtils.println(ev.getAction());
+        //正在滚动的情况下，屏蔽手势
         if(mode == Mode.DISABLED||mScroller.computeScrollOffset()){
             return false;
         }
@@ -288,7 +295,6 @@ public abstract class PullToRefreshBase<T extends View>  extends ViewGroup {
 
     @Override
     public boolean onTouchEvent(MotionEvent ev) {
-        MotionEventUtils.println(ev.getAction(),isTop+"",isBottom+"",getScrollY()+"");
         switch (ev.getAction()){
             case MotionEvent.ACTION_MOVE:
                 float deltaY = ev.getY() - mLastY;
@@ -335,7 +341,7 @@ public abstract class PullToRefreshBase<T extends View>  extends ViewGroup {
         if((getScrollY()-hideFooterHeight)>=0){
             mScroller.startScroll(0,getScrollY(),0,hideFooterHeight-getScrollY());
             invalidate();
-            //上拉高度未达到footerView的高度情况下，并且不是正在加载的情况下，回弹隐藏footerview
+        //上拉高度未达到footerView的高度情况下，并且不是正在加载的情况下，回弹隐藏footerview
         }else if(currentFooterStatus != STATUS_LOADING){
             mScroller.startScroll(0,getScrollY(),0,-getScrollY());
             invalidate();
@@ -390,19 +396,19 @@ public abstract class PullToRefreshBase<T extends View>  extends ViewGroup {
     @Override
     public void computeScroll() {
         if(mScroller.computeScrollOffset()){
+            isScrolling = true;
             scrollTo(mScroller.getCurrX(), mScroller.getCurrY());
             postInvalidate();
         }else{
-            Log.e(TAG,"omputeScroll()");
-            if(isRelesedFinger){
+            if(isScrolling){
                 if(isTop&&pullDirection==PullDirection.DOWN){
-                    Log.e(TAG,"computeScroll()--updateHeaderView");
                     updateHeaderView();
                 }else if(isBottom&&pullDirection==PullDirection.UP){
-                    Log.e(TAG,"computeScroll()--updateFooterView");
                     updateFooterView();
                 }
+                ViewUtils.obtainFocus(refreshView);
                 pullDirection = PullDirection.NONE;
+                isScrolling = false;
             }
         }
     }

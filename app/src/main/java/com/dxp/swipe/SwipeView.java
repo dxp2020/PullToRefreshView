@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Scroller;
 
+import com.dxp.R;
 import com.dxp.utils.MotionEventUtils;
 
 public class SwipeView extends ViewGroup{
@@ -50,7 +51,6 @@ public class SwipeView extends ViewGroup{
     private SwipeMenu rightMenu;
     private SwipeMenu leftMenu;
     private OnOpenedMenuListener mOnOpenedMenuListener;
-    private OnClickListener mOnClickListener;
     private int position=-1;
 
     public SwipeView(Context context,View contentView) {
@@ -68,10 +68,13 @@ public class SwipeView extends ViewGroup{
     private void init(Context context,final OnClickListener pOnClickListener) {
         mScroller = new Scroller(context);
         addView(contentView);
-
         contentView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if(isOpen()){
+                    smoothCloseMenu();
+                    return;
+                }
                 if(pOnClickListener!=null){
                     pOnClickListener.onClick(SwipeView.this);
                 }
@@ -395,6 +398,10 @@ public class SwipeView extends ViewGroup{
             return SwipeDirection.RIGHT;
         }
         return null;
+    }
+
+    public View getContentView() {
+        return contentView;
     }
 
     public SwipeDirection getSwipeDirection(){

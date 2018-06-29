@@ -8,6 +8,10 @@ import android.view.ViewGroup;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 
+import com.dxp.R;
+
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.List;
 
 public abstract class SwipeListAdapter implements ListAdapter{
@@ -29,12 +33,7 @@ public abstract class SwipeListAdapter implements ListAdapter{
     public View getView(int position, View convertView, ViewGroup parent) {
         SwipeView view = null;
         if(convertView==null){
-            view = new SwipeView(mContext, mAdapter.getView(position, convertView, parent), new SwipeView.OnClickListener() {
-                @Override
-                public void onClick(SwipeView view) {
-                    mListView.getOnItemClickListener().onItemClick(mListView,view,view.getPosition(),getItemId(view.getPosition()));
-                }
-            });
+            view = new SwipeView(mContext, mAdapter.getView(position, convertView, parent), handleClickEvent());
             view.addLeftMenu(createLeftMenu());
             view.addRightMenu(createRightMenu());
         }else{
@@ -73,6 +72,19 @@ public abstract class SwipeListAdapter implements ListAdapter{
             view.closeMenu();
         }
         return view;
+    }
+
+    private SwipeView.OnClickListener handleClickEvent() {
+        if(mListView.isSetItemClick()){
+           return new SwipeView.OnClickListener() {
+                @Override
+                public void onClick(SwipeView view) {
+                    mListView.getOnItemClickListener().onItemClick(mListView,view,view.getPosition(),getItemId(view.getPosition()));
+                }
+            };
+        }else{
+            return null;
+        }
     }
 
     public abstract SwipeMenu createLeftMenu();

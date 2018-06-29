@@ -1,24 +1,16 @@
 package com.dxp.activity;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.support.v7.app.AppCompatActivity;
-import android.view.View;
 import android.webkit.WebView;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
 
 import com.dxp.R;
-import com.dxp.pulltorefresh.PullToRefreshListView;
 import com.dxp.pulltorefresh.PullToRefreshWebView;
 import com.dxp.pulltorefresh.base.PullToRefreshBase;
 
-import java.util.ArrayList;
-import java.util.List;
-
-public class MainActivityWebView extends AppCompatActivity {
+public class MainActivityWebView extends Activity {
     private WebView lv_refreshview;
     private PullToRefreshWebView ptrv_pull_refresh;
 

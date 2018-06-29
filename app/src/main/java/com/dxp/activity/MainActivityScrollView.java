@@ -1,8 +1,8 @@
 package com.dxp.activity;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.v7.app.AppCompatActivity;
 import android.widget.ArrayAdapter;
 import android.widget.ScrollView;
 
@@ -14,7 +14,7 @@ import com.dxp.view.ImbeddedListView;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivityScrollView extends AppCompatActivity {
+public class MainActivityScrollView extends Activity {
     private PullToRefreshScrollView prsv_scroll_view;
     private ImbeddedListView lv_listview;
     private List<String> data = new ArrayList<>();

@@ -1,5 +1,6 @@
 package com.dxp.activity;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -16,7 +17,7 @@ import com.dxp.pulltorefresh.base.PullToRefreshBase;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivityGridView extends AppCompatActivity {
+public class MainActivityGridView extends Activity {
     private GridView lv_listview;
     private PullToRefreshGridView ptrv_pull_refresh;
     private List<String> data = new ArrayList<>();

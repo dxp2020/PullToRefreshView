@@ -49,4 +49,14 @@ public class ViewUtils {
         view.measure(spec, spec);
         return view.getMeasuredHeight();
     }
+
+    public static void obtainFocus(View view){
+        Log.e("tag--->","obtainFocus");
+        view.setFocusable(true);
+        view.setFocusableInTouchMode(true);
+        view.requestFocus();
+        view.requestFocusFromTouch();
+    }
+
+//    MotionEventUtils.println(ev.getAction(),"onInterceptTouchEvent",refreshView.isFocused()+"",header.isFocused()+"");
 }

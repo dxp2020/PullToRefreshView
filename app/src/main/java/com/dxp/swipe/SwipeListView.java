@@ -93,4 +93,6 @@ public class SwipeListView extends ListView{
     public boolean isSetItemClick() {
         return isSetItemClick;
     }
+
+
 }

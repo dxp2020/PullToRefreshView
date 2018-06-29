@@ -66,6 +66,7 @@ public class SwipeMenu extends LinearLayout implements View.OnClickListener{
     public void onClick(View v) {
         if (onItemClickListener != null) {
             onItemClickListener.onItemClick(v.getId());
+            swipeView.smoothCloseMenu();
         }
     }
 

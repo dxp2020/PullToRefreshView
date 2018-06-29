@@ -1,28 +1,24 @@
 package com.dxp.activity;
 
+import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
 import android.widget.TextView;
 
 import com.dxp.R;
-import com.dxp.pulltorefresh.PullToRefreshListView;
 import com.dxp.pulltorefresh.PullToRefreshRecycleView;
 import com.dxp.pulltorefresh.base.PullToRefreshBase;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivityRecycleView extends AppCompatActivity {
+public class MainActivityRecycleView extends Activity {
     private RecyclerView lv_listview;
     private PullToRefreshRecycleView ptrv_pull_refresh;
     private List<String> data = new ArrayList<>();

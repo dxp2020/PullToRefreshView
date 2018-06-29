@@ -2,10 +2,12 @@ package com.dxp.pulltorefresh;
 
 import android.content.Context;
 import android.util.AttributeSet;
+import android.view.MotionEvent;
 import android.widget.ListView;
 
 import com.dxp.pulltorefresh.base.PullToRefreshAbsListView;
 import com.dxp.pulltorefresh.base.ViewOrientation;
+import com.dxp.utils.MotionEventUtils;
 
 public class PullToRefreshListView extends PullToRefreshAbsListView<ListView> {
     private String TAG = "PullToRefreshListView";

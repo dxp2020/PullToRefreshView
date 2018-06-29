@@ -1,37 +1,31 @@
 package com.dxp.activity;
 
+import android.app.Activity;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.support.v7.app.AppCompatActivity;
 import android.view.View;
-import android.webkit.WebView;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.Toast;
 
 import com.dxp.R;
 import com.dxp.pulltorefresh.PullToRefreshSwipeListView;
-import com.dxp.pulltorefresh.PullToRefreshWebView;
 import com.dxp.pulltorefresh.base.PullToRefreshBase;
 import com.dxp.swipe.SwipeDirection;
 import com.dxp.swipe.SwipeListView;
 import com.dxp.swipe.SwipeMenu;
 import com.dxp.swipe.SwipeMenuCreator;
 import com.dxp.swipe.SwipeMenuItem;
-import com.dxp.swipe.SwipeView;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivitySwipeView extends AppCompatActivity {
+public class MainActivitySwipeView extends Activity {
     private PullToRefreshSwipeListView lv_swipe_list;
     private SwipeListView lv_listview;
-    private SwipeView swipeView;
     private ArrayAdapter adapter;
     private List<String> data = new ArrayList<>();
 
@@ -89,49 +83,45 @@ public class MainActivitySwipeView extends AppCompatActivity {
         lv_swipe_list.getRefreshView().setSwipeMenuCreator(new SwipeMenuCreator() {
             @Override
             public SwipeMenu createLeftMenu() {
-                return getSwipeMenu();
+                return getLeftSwipeMenu();
             }
 
             @Override
             public SwipeMenu createRightMenu() {
-                return getSwipeMenu();
+                return getRightSwipeMenu();
             }
         });
-
-
-//        ll_container = findViewById(R.id.ll_container);
-//        swipeView = new SwipeView(this, View.inflate(this,R.layout.layout_swipe_view_item,null));
-//        ll_container.addView(swipeView);
-//
-//        swipeView.addRightMenu(getSwipeMenu());
-//        swipeView.addLeftMenu(getSwipeMenu());
-//        swipeView.setSwipeDirection(SwipeDirection.BOTH);
-//
-//        swipeView.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                if(swipeView.getTag()==null){
-//                    swipeView.setTag("");
-//                    swipeView.smoothOpenMenu();
-//                }else{
-//                    swipeView.setTag(null);
-//                    swipeView.smoothCloseMenu();
-//                }
-//            }
-//        });
     }
 
-    private SwipeMenu getSwipeMenu() {
+    private SwipeMenu getLeftSwipeMenu() {
         SwipeMenu swipeMenu = new SwipeMenu(this);
-        swipeMenu.addMenuItem(getSwipeMenuItem());
+        swipeMenu.addMenuItem(getSwipeMenuItem("收藏",Color.parseColor("#09BFEA")));
+        swipeMenu.setOnSwipeItemClickListener(new SwipeMenu.OnSwipeItemClickListener() {
+            @Override
+            public void onItemClick(int index) {
+                Toast.makeText(MainActivitySwipeView.this,"收藏"+index,Toast.LENGTH_SHORT).show();
+            }
+        });
         return swipeMenu;
     }
 
-    private SwipeMenuItem getSwipeMenuItem() {
+    private SwipeMenu getRightSwipeMenu() {
+        SwipeMenu swipeMenu = new SwipeMenu(this);
+        swipeMenu.addMenuItem(getSwipeMenuItem("删除",Color.parseColor("#e83f22")));
+        swipeMenu.setOnSwipeItemClickListener(new SwipeMenu.OnSwipeItemClickListener() {
+            @Override
+            public void onItemClick(int index) {
+                Toast.makeText(MainActivitySwipeView.this,"删除"+index,Toast.LENGTH_SHORT).show();
+            }
+        });
+        return swipeMenu;
+    }
+
+    private SwipeMenuItem getSwipeMenuItem(String title,int color) {
         SwipeMenuItem deleteItem = new SwipeMenuItem(this);
-        deleteItem.setBackground(new ColorDrawable(Color.parseColor("#e83f22")));
+        deleteItem.setBackground(new ColorDrawable(color));
         deleteItem.setWidth(dip2px(90));
-        deleteItem.setTitle("删除");
+        deleteItem.setTitle(title);
         deleteItem.setTitleSize(16);
         deleteItem.setTitleColor(Color.WHITE);
         return deleteItem;
