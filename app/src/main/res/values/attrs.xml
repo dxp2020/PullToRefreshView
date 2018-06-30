@@ -1,9 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <declare-styleable name = "SwipeViewLayout">
+    <declare-styleable name = "SwipeView">
         <attr name = "swipe_direction" format = "string" />
     </declare-styleable>
 
-
+    <declare-styleable name = "RefreshView">
+        <attr name = "header_background" format = "reference|color" />
+        <attr name = "footer_background" format = "reference|color" />
+    </declare-styleable>
 </resources>

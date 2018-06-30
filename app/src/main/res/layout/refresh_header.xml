@@ -2,50 +2,67 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:gravity="center"
-    android:orientation="horizontal">
+    android:gravity="center_horizontal"
+    android:orientation="vertical">
 
     <RelativeLayout
-        android:layout_width="0dp"
-        android:layout_height="60dp"
-        android:layout_weight="1"
-        >
-
-        <ImageView
-            android:id="@+id/arrow"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:layout_alignParentRight="true"
-            android:layout_centerVertical="true"
-            />
-
-        <ProgressBar
-            android:id="@+id/progress_bar"
-            android:layout_width="20dp"
-            android:layout_height="20dp"
-            android:layout_marginRight="10dp"
-            android:indeterminate="true"
-            android:indeterminateDrawable="@drawable/anim_progresss_bar"
-            android:layout_alignParentRight="true"
-            android:layout_centerVertical="true"
-            android:visibility="invisible"
-            />
-
-    </RelativeLayout>
-
-    <RelativeLayout
-        android:layout_width="0dp"
-        android:layout_height="60dp"
-        android:layout_weight="1"
-        >
-        <TextView
-            android:id="@+id/description"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+        <Space
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:gravity="left|center_vertical"
-            android:text="@string/pull_to_refresh"
-            android:layout_alignParentLeft="true"
-            />
+            android:layout_height="match_parent"/>
     </RelativeLayout>
+
+    <LinearLayout
+        android:id="@+id/ll_inner_header"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <RelativeLayout
+            android:layout_width="0dp"
+            android:layout_height="60dp"
+            android:layout_weight="1"
+            >
+
+            <ImageView
+                android:id="@+id/arrow"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                />
+
+            <ProgressBar
+                android:id="@+id/progress_bar"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_marginRight="10dp"
+                android:indeterminate="true"
+                android:indeterminateDrawable="@drawable/anim_progresss_bar"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:visibility="invisible"
+                />
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="0dp"
+            android:layout_height="60dp"
+            android:layout_weight="1"
+            >
+            <TextView
+                android:id="@+id/description"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="left|center_vertical"
+                android:text="@string/pull_to_refresh"
+                android:layout_alignParentLeft="true"
+                />
+        </RelativeLayout>
+
+    </LinearLayout>
 
 </LinearLayout>
