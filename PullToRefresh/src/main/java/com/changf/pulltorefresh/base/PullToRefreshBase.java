@@ -3,7 +3,9 @@ package com.changf.pulltorefresh.base;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.BitmapFactory;
+import android.os.Build;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -417,12 +419,15 @@ public abstract class PullToRefreshBase<T extends View>  extends ViewGroup {
                 }else if(isBottom&&pullDirection==PullDirection.UP){
                     updateFooterView();
                 }
+                //5.0系统及以下会出现刷新之后item无法点击，滑动之后才可以点击的问题
+                if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.LOLLIPOP_MR1) {
+                    ViewUtils.obtainFocus(refreshView);
+                }
                 pullDirection = PullDirection.NONE;
                 isScrolling = false;
             }
         }
     }
-
 
     private void updateHeaderView() {
         if(currentStatus==STATUS_REFRESH_FINISHED){

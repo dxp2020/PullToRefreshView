@@ -49,12 +49,11 @@ public class ViewUtils {
         return view.getMeasuredHeight();
     }
 
-//    public static void obtainFocus(View view){
-//        Log.e("tag--->","obtainFocus");
-//        view.setFocusable(true);
-//        view.setFocusableInTouchMode(true);
-//        view.requestFocus();
-//        view.requestFocusFromTouch();
-//    }
+    public static void obtainFocus(View view){
+        view.setFocusable(true);
+        view.setFocusableInTouchMode(true);
+        view.requestFocus();
+        view.requestFocusFromTouch();
+    }
 
 }
