@@ -43,17 +43,6 @@ public class PullToRefreshListView extends PullToRefreshAbsListView<ListView> {
             return PullToRefreshListView.this.isScrolledBottom();
         }
 
-        /**
-         * 屏蔽android4.4 setAdapter时View抢焦点的BUG
-         */
-        @Override
-        public boolean isInTouchMode() {
-            if(19 == Build.VERSION.SDK_INT){
-                return !(hasFocus() && !super.isInTouchMode());
-            }else{
-                return super.isInTouchMode();
-            }
-        }
     }
 
 

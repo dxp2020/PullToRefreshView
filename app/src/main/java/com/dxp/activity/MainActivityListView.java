@@ -58,7 +58,7 @@ public class MainActivityListView extends Activity {
         lv_listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Toast.makeText(MainActivityListView.this,"click-->"+position,Toast.LENGTH_SHORT).show();
+                ptrv_pull_refresh.setRefreshing();
             }
         });
         ptrv_pull_refresh.setOnRefreshLoadListener(new PullToRefreshBase.RefreshLoadListener(){

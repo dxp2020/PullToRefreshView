@@ -527,6 +527,11 @@ public abstract class PullToRefreshBase<T extends View>  extends ViewGroup {
 
 
     public void setRefreshCompleted() {
+        //防止加载的时候，调用刷新完成，也隐藏下拉头的问题
+        if(currentFooterStatus==STATUS_LOADING){
+            return;
+        }
+        pullDirection = PullDirection.DOWN;
         currentStatus = STATUS_REFRESH_FINISHED;
         mScroller.startScroll(0,getScrollY(),0,-getScrollY());
         invalidate();
@@ -536,12 +541,19 @@ public abstract class PullToRefreshBase<T extends View>  extends ViewGroup {
         if(mode== Mode.DISABLED){
             return;
         }
+        isTop = true;
+        pullDirection=PullDirection.DOWN;
         currentStatus = STATUS_REFRESHING;
         mScroller.startScroll(0,0,0,hideHeaderHeight);
         invalidate();
     }
 
     public void setLoadCompleted(){
+        //防止刷新的时候，调用加载完成，也隐藏上拉头的问题
+        if(currentStatus==STATUS_REFRESHING){
+            return;
+        }
+        pullDirection=PullDirection.UP;
         currentFooterStatus = STATUS_LOAD_FINISHED;
         mScroller.startScroll(0,getScrollY(),0,-getScrollY());
         invalidate();
@@ -551,6 +563,8 @@ public abstract class PullToRefreshBase<T extends View>  extends ViewGroup {
         if(mode== Mode.DISABLED){
             return;
         }
+        isBottom = true;
+        pullDirection=PullDirection.UP;
         currentFooterStatus = STATUS_LOADING;
         mScroller.startScroll(0,0,0,hideFooterHeight);
         invalidate();

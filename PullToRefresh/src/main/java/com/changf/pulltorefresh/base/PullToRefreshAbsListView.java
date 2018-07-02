@@ -4,9 +4,10 @@ import android.content.Context;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.AbsListView;
+import android.widget.ListAdapter;
 
 public abstract class PullToRefreshAbsListView<T extends AbsListView> extends PullToRefreshBase<T> {
-    
+
     public PullToRefreshAbsListView(Context context) {
         super(context);
     }
@@ -49,4 +50,13 @@ public abstract class PullToRefreshAbsListView<T extends AbsListView> extends Pu
             return  false;
         }
     }
+
+    public void setEmptyView(View view){
+        getRefreshView().setEmptyView(view);
+    }
+
+    public void setAdapter(ListAdapter adapter) {
+        getRefreshView().setAdapter(adapter);
+    }
+
 }
