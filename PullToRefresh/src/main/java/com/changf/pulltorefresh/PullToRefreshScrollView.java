@@ -9,7 +9,6 @@ import com.changf.pulltorefresh.base.PullToRefreshBase;
 import com.changf.pulltorefresh.base.ViewOrientation;
 
 public class PullToRefreshScrollView extends PullToRefreshBase<ScrollView> {
-    private String TAG = "PullToRefreshScrollView";
 
     public PullToRefreshScrollView(Context context) {
         this(context,null);

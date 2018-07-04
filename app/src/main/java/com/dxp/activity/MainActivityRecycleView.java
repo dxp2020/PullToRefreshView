@@ -20,6 +20,7 @@ import java.util.List;
 
 public class MainActivityRecycleView extends Activity {
     private RecyclerView lv_listview;
+    private View empty_view;
     private PullToRefreshRecycleView ptrv_pull_refresh;
     private List<String> data = new ArrayList<>();
     private DemoAdapter adapter;
@@ -51,8 +52,9 @@ public class MainActivityRecycleView extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_recycle_view);
-        initData();
+        empty_view = findViewById(R.id.empty_view);
         ptrv_pull_refresh = findViewById(R.id.ptrv_pull_refresh);
+        ptrv_pull_refresh.setEmptyView(empty_view);
         lv_listview = ptrv_pull_refresh.getRefreshView();
         lv_listview.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
         adapter = new DemoAdapter(this);

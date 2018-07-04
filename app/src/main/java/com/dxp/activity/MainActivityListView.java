@@ -20,6 +20,7 @@ import java.util.List;
 public class MainActivityListView extends Activity {
     private final String TAG = "MainActivityListView";
     private ListView lv_listview;
+    private View empty_view;
     private PullToRefreshListView ptrv_pull_refresh;
     private List<String> data = new ArrayList<>();
     private ArrayAdapter adapter;
@@ -50,8 +51,9 @@ public class MainActivityListView extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_list_view);
-        initData();
+        empty_view = findViewById(R.id.empty_view);
         ptrv_pull_refresh = findViewById(R.id.ptrv_pull_refresh);
+        ptrv_pull_refresh.setEmptyView(empty_view);
         lv_listview = ptrv_pull_refresh.getRefreshView();
         adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1,data);
         lv_listview.setAdapter(adapter);
@@ -66,7 +68,6 @@ public class MainActivityListView extends Activity {
             public void onRefresh() {
                 handler.sendEmptyMessageDelayed(0,2000);
             }
-
             @Override
             public void onLoadMore() {
                 handler.sendEmptyMessageDelayed(1,2000);

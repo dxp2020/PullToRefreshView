@@ -4,13 +4,19 @@ import android.content.Context;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
+import android.util.Log;
+import android.view.Gravity;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.ViewParent;
+import android.widget.FrameLayout;
+import android.widget.LinearLayout;
 
 import com.changf.pulltorefresh.base.PullToRefreshBase;
 import com.changf.pulltorefresh.base.ViewOrientation;
 
 public class PullToRefreshRecycleView extends PullToRefreshBase<RecyclerView> {
-    private String TAG = "PullToRefreshRecycleView";
 
     public PullToRefreshRecycleView(Context context) {
         this(context,null);
@@ -26,6 +32,7 @@ public class PullToRefreshRecycleView extends PullToRefreshBase<RecyclerView> {
     }
 
     private class MyRecyclerView extends RecyclerView implements ViewOrientation {
+        private View emptyView;
 
         public MyRecyclerView(Context context) {
             super(context);
@@ -67,6 +74,79 @@ public class PullToRefreshRecycleView extends PullToRefreshBase<RecyclerView> {
                 return false;
             }
         }
+
+        private void checkIfEmpty() {
+            if (emptyView != null && getAdapter() != null) {
+                final boolean emptyViewVisible =
+                        getAdapter().getItemCount() == 0;
+                emptyView.setVisibility(emptyViewVisible ? VISIBLE : GONE);
+                setVisibility(emptyViewVisible ? GONE : VISIBLE);
+            }
+        }
+
+        @Override
+        public void setAdapter(Adapter adapter) {
+            final Adapter oldAdapter = getAdapter();
+            if (oldAdapter != null) {
+                oldAdapter.unregisterAdapterDataObserver(observer);
+            }
+            super.setAdapter(adapter);
+            if (adapter != null) {
+                adapter.registerAdapterDataObserver(observer);
+            }
+
+            checkIfEmpty();
+        }
+
+        //设置没有内容时，提示用户的空布局
+        public void setEmptyView(View emptyView) {
+            this.emptyView = emptyView;
+            checkIfEmpty();
+        }
+
+        final private AdapterDataObserver observer = new AdapterDataObserver() {
+            @Override
+            public void onChanged() {
+                checkIfEmpty();
+            }
+
+            @Override
+            public void onItemRangeInserted(int positionStart, int itemCount) {
+                Log.i(TAG, "onItemRangeInserted" + itemCount);
+                checkIfEmpty();
+            }
+
+            @Override
+            public void onItemRangeRemoved(int positionStart, int itemCount) {
+                checkIfEmpty();
+            }
+        };
     }
 
+    public void setEmptyView(View emptyView){
+        ViewParent emptyViewParent = emptyView.getParent();
+        //从原布局中移除
+        if (null != emptyViewParent && emptyViewParent instanceof ViewGroup) {
+            ((ViewGroup) emptyViewParent).removeView(emptyView);
+        }
+        //添加到刷新View所在的布局
+        FrameLayout mRefreshableViewWrapper = getRefreshableViewWrapper();
+        mRefreshableViewWrapper.addView(emptyView,convertEmptyViewLayoutParams(emptyView.getLayoutParams()));
+        //设置emptyView
+        ((MyRecyclerView)getRefreshView()).setEmptyView(emptyView);
+    }
+
+    private static FrameLayout.LayoutParams convertEmptyViewLayoutParams(ViewGroup.LayoutParams lp) {
+        FrameLayout.LayoutParams newLp = null;
+        if (null != lp) {
+            newLp = new FrameLayout.LayoutParams(lp);
+
+            if (lp instanceof LinearLayout.LayoutParams) {
+                newLp.gravity = ((LinearLayout.LayoutParams) lp).gravity;
+            } else {
+                newLp.gravity = Gravity.CENTER;
+            }
+        }
+        return newLp;
+    }
 }

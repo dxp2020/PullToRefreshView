@@ -8,7 +8,6 @@ import com.changf.pulltorefresh.base.PullToRefreshAbsListView;
 import com.changf.pulltorefresh.base.ViewOrientation;
 
 public class PullToRefreshGridView extends PullToRefreshAbsListView<GridView> {
-    private String TAG = "PullToRefreshGridView";
 
     public PullToRefreshGridView(Context context) {
         this(context,null);

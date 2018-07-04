@@ -8,7 +8,6 @@ import com.changf.pulltorefresh.base.ViewOrientation;
 import com.changf.pulltorefresh.swipe.SwipeListView;
 
 public class PullToRefreshSwipeListView extends PullToRefreshAbsListView<SwipeListView> {
-    private String TAG = "PullToRefreshSwipeListView";
 
     public PullToRefreshSwipeListView(Context context) {
         this(context,null);

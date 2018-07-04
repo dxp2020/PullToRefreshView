@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.ViewConfiguration;
 import android.view.ViewGroup;
 import android.view.animation.RotateAnimation;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
@@ -19,10 +20,11 @@ import android.widget.Scroller;
 import android.widget.TextView;
 
 import com.changf.pulltorefresh.R;
+import com.changf.pulltorefresh.utils.MotionEventUtils;
 import com.changf.pulltorefresh.utils.ViewUtils;
 
 
-public abstract class PullToRefreshBase<T extends View>  extends ViewGroup {
+public abstract class PullToRefreshBase<T extends View>  extends LinearLayout {
     public final String TAG = getClass().getSimpleName();
 
     /**
@@ -33,6 +35,11 @@ public abstract class PullToRefreshBase<T extends View>  extends ViewGroup {
      * 上拉底部的View
      */
     private View footer;
+
+    /**
+     * 需要去刷新和加载的View
+     */
+    private FrameLayout mRefreshableViewWrapper;
 
     /**
      * 需要去刷新和加载的View
@@ -212,8 +219,6 @@ public abstract class PullToRefreshBase<T extends View>  extends ViewGroup {
         screenHeight = getResources().getDisplayMetrics().heightPixels;
         touchSlop = ViewConfiguration.get(context).getScaledTouchSlop();
 
-        refreshView = setRefreshView(context,attrs);
-
         header = LayoutInflater.from(context).inflate(R.layout.refresh_header, null, false);
         header.setBackgroundResource(header_background);
         innerHeader = header.findViewById(R.id.ll_inner_header);
@@ -230,52 +235,84 @@ public abstract class PullToRefreshBase<T extends View>  extends ViewGroup {
         footerDescription = footer.findViewById(R.id.footer_description);
         footerArrow.setImageBitmap(ViewUtils.rotateBitmap(BitmapFactory.decodeResource(getResources(),R.mipmap.default_ptr_flip),-180));
 
-        //在onAttachedToWindow才可以获取到ViewGroup的child数量
-        addView(header);
-        addView(refreshView,new LayoutParams(LayoutParams.MATCH_PARENT,LayoutParams.MATCH_PARENT));
-        addView(footer);
+        setOrientation(LinearLayout.VERTICAL);
+
+        addView(header,createHeaderParams());
+        addView(addRefreshableView(context,attrs));
+        addView(footer,createFooterParams());
+
+        hideHeaderHeight = -measureHeight(innerHeader);
+        hideFooterHeight = measureHeight(innerFooter);
     }
 
-    @Override
-    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        maxWidth = 0;
-        maxHeight = 0;
-        int childCount = getChildCount();
-        for(int i=0;i<childCount;i++){
-            View child = getChildAt(i);
-            if(child == header || child == footer){
-                measureChild(child,widthMeasureSpec,MeasureSpec.makeMeasureSpec(Math.round(screenHeight/DEFAULT_RATIO),MeasureSpec.EXACTLY));
-            }else{
-                measureChild(child,widthMeasureSpec,heightMeasureSpec);
-            }
-            maxWidth = Math.max(maxWidth,child.getMeasuredWidth());
-            maxHeight += child.getMeasuredHeight();
-        }
-        setMeasuredDimension(maxWidth+getPaddingLeft()+getPaddingRight(),maxHeight+getPaddingTop()+getPaddingBottom());
+    private FrameLayout addRefreshableView(Context context,AttributeSet attrs) {
+        refreshView = setRefreshView(context,attrs);
+        mRefreshableViewWrapper = new FrameLayout(context);
+        mRefreshableViewWrapper.addView(refreshView,new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.MATCH_PARENT));
+
+        LayoutParams params = new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.MATCH_PARENT);
+        mRefreshableViewWrapper.setLayoutParams(params);
+        return mRefreshableViewWrapper;
     }
 
-    @Override
-    protected void onLayout(boolean changed, int l, int t, int r, int b) {
-        if(changed){
-            if (hideHeaderHeight==0) {
-                hideHeaderHeight = -innerHeader.getMeasuredHeight();
-            }
-            if (hideFooterHeight==0) {
-                hideFooterHeight = innerFooter.getMeasuredHeight();
-            }
-            int childCount = getChildCount();
-            int top = -header.getMeasuredHeight()+getPaddingTop();
-            for(int i=0;i<childCount;i++){
-                View child = getChildAt(i);
-                child.layout(getPaddingLeft(),top,maxWidth+getPaddingLeft(),child.getMeasuredHeight()+top);
-                top+=child.getMeasuredHeight();
-            }
-        }
+    private LayoutParams createHeaderParams() {
+        LayoutParams params = createFooterParams();
+        params.topMargin = -params.height;
+        return params;
     }
 
+    private LayoutParams createFooterParams(){
+        return new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,Math.round(screenHeight/DEFAULT_RATIO));
+    }
+
+    private int measureHeight(View view){
+        int spec = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED);
+        view.measure(spec, spec);
+        return view.getMeasuredHeight();
+    }
+
+//    使用ViewGroup的情况下，ListView默认无数据，请求加载出数据后，无法显示数据，暂时找不到解决的办法
+//    因此放弃使用继承ViewGroup，改成LinearLayout
+//    @Override
+//    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+//        maxWidth = 0;
+//        maxHeight = 0;
+//        int childCount = getChildCount();
+//        for(int i=0;i<childCount;i++){
+//            View child = getChildAt(i);
+//            if(child == header || child == footer){
+//                measureChild(child,widthMeasureSpec,MeasureSpec.makeMeasureSpec(Math.round(screenHeight/DEFAULT_RATIO),MeasureSpec.EXACTLY));
+//            }else{
+//                measureChild(child,widthMeasureSpec,heightMeasureSpec);
+//            }
+//            maxWidth = Math.max(maxWidth,child.getMeasuredWidth());
+//            maxHeight += child.getMeasuredHeight();
+//        }
+//        setMeasuredDimension(maxWidth+getPaddingLeft()+getPaddingRight(),maxHeight+getPaddingTop()+getPaddingBottom());
+//    }
+//
+//    @Override
+//    protected void onLayout(boolean changed, int l, int t, int r, int b) {
+//        if(changed){
+//            if (hideHeaderHeight==0) {
+//                hideHeaderHeight = -innerHeader.getMeasuredHeight();
+//            }
+//            if (hideFooterHeight==0) {
+//                hideFooterHeight = innerFooter.getMeasuredHeight();
+//            }
+//            int childCount = getChildCount();
+//            int top = -header.getMeasuredHeight()+getPaddingTop();
+//            for(int i=0;i<childCount;i++){
+//                View child = getChildAt(i);
+//                child.layout(getPaddingLeft(),top,maxWidth+getPaddingLeft(),child.getMeasuredHeight()+top);
+//                top+=child.getMeasuredHeight();
+//            }
+//        }
+//    }
 
     @Override
     public boolean onInterceptTouchEvent(MotionEvent ev) {
+        Log.e(TAG,"onInterceptTouchEvent-->"+ MotionEventUtils.getPrintStr(ev.getAction()));
         //正在滚动的情况下，屏蔽手势
         if(mode == Mode.DISABLED||mScroller.computeScrollOffset()){
             return false;
@@ -320,6 +357,7 @@ public abstract class PullToRefreshBase<T extends View>  extends ViewGroup {
 
     @Override
     public boolean onTouchEvent(MotionEvent ev) {
+        Log.e(TAG,"onTouchEvent-->"+ MotionEventUtils.getPrintStr(ev.getAction()));
         switch (ev.getAction()){
             case MotionEvent.ACTION_MOVE:
                 float deltaY = ev.getY() - mLastY;
@@ -477,7 +515,6 @@ public abstract class PullToRefreshBase<T extends View>  extends ViewGroup {
                 if(mListener!=null){
                     mListener.onRefresh();
                 }
-
             }
         }
     }
@@ -614,7 +651,11 @@ public abstract class PullToRefreshBase<T extends View>  extends ViewGroup {
         footerArrow.startAnimation(animation);
     }
 
-    protected abstract T setRefreshView(Context context,AttributeSet attrs);
+    public FrameLayout getRefreshableViewWrapper() {
+        return mRefreshableViewWrapper;
+    }
+
+    protected abstract T setRefreshView(Context context, AttributeSet attrs);
 
     public T getRefreshView(){
         return refreshView;

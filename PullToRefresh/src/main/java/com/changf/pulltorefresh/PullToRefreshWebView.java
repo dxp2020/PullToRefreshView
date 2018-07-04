@@ -8,7 +8,6 @@ import com.changf.pulltorefresh.base.PullToRefreshBase;
 import com.changf.pulltorefresh.base.ViewOrientation;
 
 public class PullToRefreshWebView extends PullToRefreshBase<WebView> {
-    private String TAG = "PullToRefreshWebView";
 
     public PullToRefreshWebView(Context context) {
         this(context, null);

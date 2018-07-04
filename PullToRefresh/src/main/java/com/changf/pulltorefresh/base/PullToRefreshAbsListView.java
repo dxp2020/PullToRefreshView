@@ -2,8 +2,15 @@ package com.changf.pulltorefresh.base;
 
 import android.content.Context;
 import android.util.AttributeSet;
+import android.util.Log;
+import android.view.Gravity;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.ViewParent;
 import android.widget.AbsListView;
+import android.widget.FrameLayout;
+import android.widget.LinearLayout;
 import android.widget.ListAdapter;
 
 public abstract class PullToRefreshAbsListView<T extends AbsListView> extends PullToRefreshBase<T> {
@@ -14,6 +21,20 @@ public abstract class PullToRefreshAbsListView<T extends AbsListView> extends Pu
 
     public PullToRefreshAbsListView(Context context, AttributeSet attrs) {
         super(context, attrs);
+    }
+
+    private static FrameLayout.LayoutParams convertEmptyViewLayoutParams(ViewGroup.LayoutParams lp) {
+        FrameLayout.LayoutParams newLp = null;
+        if (null != lp) {
+            newLp = new FrameLayout.LayoutParams(lp);
+
+            if (lp instanceof LinearLayout.LayoutParams) {
+                newLp.gravity = ((LinearLayout.LayoutParams) lp).gravity;
+            } else {
+                newLp.gravity = Gravity.CENTER;
+            }
+        }
+        return newLp;
     }
 
     public boolean isScrolledTop(){
@@ -51,8 +72,23 @@ public abstract class PullToRefreshAbsListView<T extends AbsListView> extends Pu
         }
     }
 
-    public void setEmptyView(View view){
-        getRefreshView().setEmptyView(view);
+    public void setEmptyView(View emptyView){
+        emptyView.setOnTouchListener(new OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                return true;
+            }
+        });
+        ViewParent emptyViewParent = emptyView.getParent();
+        //从原布局中移除
+        if (null != emptyViewParent && emptyViewParent instanceof ViewGroup) {
+            ((ViewGroup) emptyViewParent).removeView(emptyView);
+        }
+        //添加到刷新View所在的布局
+        FrameLayout mRefreshableViewWrapper = getRefreshableViewWrapper();
+        mRefreshableViewWrapper.addView(emptyView,convertEmptyViewLayoutParams(emptyView.getLayoutParams()));
+        //设置emptyView
+        getRefreshView().setEmptyView(emptyView);
     }
 
     public void setAdapter(ListAdapter adapter) {

@@ -10,7 +10,7 @@ public class ViewUtils {
     public static void showLocation(View view){
         int[] location = new int[2];
         view.getLocationInWindow(location);
-        Log.e("----",String.valueOf(location[0]+"--"+location[1])+"--"+view.getMeasuredHeight()+"--"+view.getMeasuredWidth());
+        Log.e("----",location[0]+"--"+location[1]+"--"+view.getMeasuredHeight()+"--"+view.getMeasuredWidth());
     }
 
     /**

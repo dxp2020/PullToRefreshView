@@ -1,9 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.changf.pulltorefresh.PullToRefreshListView xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/ptrv_pull_refresh"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     >
-
-</com.changf.pulltorefresh.PullToRefreshListView>
+    <com.changf.pulltorefresh.PullToRefreshListView
+        android:id="@+id/ptrv_pull_refresh"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        />
+    <TextView
+        android:id="@+id/empty_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:text="empty view"
+        android:textSize="24dp"
+        android:gravity="center"
+        android:visibility="gone"
+        />
+</RelativeLayout>
