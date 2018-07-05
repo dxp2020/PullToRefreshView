@@ -30,6 +30,7 @@ public abstract class SwipeListAdapter implements ListAdapter{
             view.addRightMenu(createRightMenu());
         }else{
             view = (SwipeView) convertView;
+            mAdapter.getView(position, view.getContentView(),parent);
         }
         view.setSwipeDirection(mListView.getSwipeDirection());
         view.setPosition(position);
