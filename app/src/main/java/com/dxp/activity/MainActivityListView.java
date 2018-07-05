@@ -60,7 +60,7 @@ public class MainActivityListView extends Activity {
         lv_listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                ptrv_pull_refresh.setRefreshing();
+//                ptrv_pull_refresh.setRefreshing();
             }
         });
         ptrv_pull_refresh.setOnRefreshLoadListener(new PullToRefreshBase.RefreshLoadListener(){

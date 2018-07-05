@@ -348,6 +348,9 @@ public class SwipeView extends ViewGroup{
     }
 
     protected void openMenu(SwipeDirection pSwipeDirection){
+        if(isOpen()){
+            return;
+        }
         if(pSwipeDirection==SwipeDirection.LEFT){
             scrollBy(getRightMenuWidth(), 0);
         }else{
