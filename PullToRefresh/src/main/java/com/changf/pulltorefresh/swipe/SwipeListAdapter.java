@@ -7,7 +7,7 @@ import android.view.ViewGroup;
 import android.widget.ListAdapter;
 
 public abstract class SwipeListAdapter implements ListAdapter{
-    private String TAG = "SwipeListAdapter";
+    private String TAG = SwipeListAdapter.class.getSimpleName();
 
     private Context mContext;
     private SwipeListView mListView;
