@@ -10,18 +10,13 @@
         >
         <View
             android:layout_width="match_parent"
-            android:layout_height="500dp"
+            android:layout_height="20dp"
             android:background="@android:color/holo_blue_dark"
             />
         <com.dxp.view.ImbeddedListView
             android:id="@+id/lv_listview"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            />
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="500dp"
-            android:background="@color/default_ripple"
             />
     </LinearLayout>
 </com.changf.pulltorefresh.PullToRefreshScrollView>

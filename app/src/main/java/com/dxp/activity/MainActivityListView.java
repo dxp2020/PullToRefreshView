@@ -66,11 +66,11 @@ public class MainActivityListView extends Activity {
         ptrv_pull_refresh.setOnRefreshLoadListener(new PullToRefreshBase.RefreshLoadListener(){
             @Override
             public void onRefresh() {
-                handler.sendEmptyMessageDelayed(0,2000);
+                handler.sendEmptyMessageDelayed(0,5000);
             }
             @Override
             public void onLoadMore() {
-                handler.sendEmptyMessageDelayed(1,2000);
+                handler.sendEmptyMessageDelayed(1,5000);
             }
         });
     }
