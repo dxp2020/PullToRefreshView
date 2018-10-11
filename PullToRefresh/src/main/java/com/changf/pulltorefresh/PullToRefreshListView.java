@@ -45,7 +45,6 @@ public class PullToRefreshListView extends PullToRefreshAbsListView<ListView> {
         public boolean isScrolledBottom() {
             return PullToRefreshListView.this.isScrolledBottom();
         }
-
     }
 
 

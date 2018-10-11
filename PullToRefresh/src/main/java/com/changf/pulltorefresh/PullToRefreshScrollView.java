@@ -1,6 +1,8 @@
 package com.changf.pulltorefresh;
 
 import android.content.Context;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.ScrollView;
@@ -55,7 +57,16 @@ public class PullToRefreshScrollView extends PullToRefreshBase<ScrollView> {
             }
             return false;
         }
+    }
 
+    @Override
+    public void smoothToBottom() {
+        new Handler().post(new Runnable() {
+            @Override
+            public void run() {
+                getRefreshView().fullScroll(ScrollView.FOCUS_DOWN);
+            }
+        });
     }
 
 }

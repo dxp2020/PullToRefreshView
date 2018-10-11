@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.BitmapFactory;
 import android.os.Build;
-import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -14,10 +13,8 @@ import android.view.ViewConfiguration;
 import android.view.ViewGroup;
 import android.view.animation.RotateAnimation;
 import android.widget.FrameLayout;
-import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.Scroller;
 import android.widget.TextView;
@@ -108,16 +105,6 @@ public abstract class PullToRefreshBase<T extends View>  extends LinearLayout {
      * 上拉底部的高度
      */
     private int hideFooterHeight;
-
-    /**
-     * 需要去刷新和加载View的原始高度
-     */
-    private int refreshableViewWrapperOriginalHeight;
-
-    /**
-     * header的原始高度
-     */
-    private int headerOriginalHeight;
 
     /**
      * 上次手指按下时的屏幕纵坐标
@@ -465,15 +452,18 @@ public abstract class PullToRefreshBase<T extends View>  extends LinearLayout {
             postInvalidate();
         }else{
             if(isScrolling){
-                if(pullDirection==PullDirection.DOWN){
+                if(isTop&&pullDirection==PullDirection.DOWN){
                     updateHeaderView();
-                }else if(pullDirection==PullDirection.UP){
+                }else if(isBottom&&pullDirection==PullDirection.UP){
                     updateFooterView();
+                }
+                //5.0系统及以下会出现刷新之后item无法点击，滑动之后才可以点击的问题
+                if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.LOLLIPOP_MR1) {
+                    ViewUtils.obtainFocus(refreshView);
                 }
                 pullDirection = PullDirection.NONE;
                 isScrolling = false;
             }
-            Log.e(TAG,"--->"+mRefreshableViewWrapper.getMeasuredHeight());
         }
     }
 
@@ -495,7 +485,9 @@ public abstract class PullToRefreshBase<T extends View>  extends LinearLayout {
                 progressBar.setVisibility(View.VISIBLE);
                 arrow.clearAnimation();
                 arrow.setVisibility(View.GONE);
-                onRefreshEvent();
+                if(mListener!=null){
+                    mListener.onRefresh();
+                }
             }
         }else if(currentStatus==STATUS_RELEASE_TO_REFRESH){
             if(Math.abs(getScrollY())<innerHeader.getHeight()){
@@ -509,7 +501,9 @@ public abstract class PullToRefreshBase<T extends View>  extends LinearLayout {
                 progressBar.setVisibility(View.VISIBLE);
                 arrow.clearAnimation();
                 arrow.setVisibility(View.GONE);
-                onRefreshEvent();
+                if(mListener!=null){
+                    mListener.onRefresh();
+                }
             }
         }else if(currentStatus==STATUS_REFRESHING){
             if(progressBar.getVisibility()==View.GONE
@@ -518,51 +512,11 @@ public abstract class PullToRefreshBase<T extends View>  extends LinearLayout {
                 progressBar.setVisibility(View.VISIBLE);
                 arrow.clearAnimation();
                 arrow.setVisibility(View.GONE);
-                onRefreshEvent();
+                if(mListener!=null){
+                    mListener.onRefresh();
+                }
             }
         }
-    }
-
-    private void updateRefreshableViewWrapperHeight(){
-        if(refreshableViewWrapperOriginalHeight==0){
-            refreshableViewWrapperOriginalHeight = mRefreshableViewWrapper.getMeasuredHeight();
-        }
-        if(headerOriginalHeight==0){
-            headerOriginalHeight = header.getMeasuredHeight();
-        }
-        //如果显示了emptyView，则不设置大小
-        if(mRefreshableViewWrapper.getChildCount()>0&&
-                (mRefreshableViewWrapper.getChildAt(0) instanceof ListView||
-                        mRefreshableViewWrapper.getChildAt(0) instanceof GridView)){
-           int visibility  = mRefreshableViewWrapper.getChildAt(0).getVisibility();
-           if(visibility == View.GONE){
-               return;
-           }
-        }
-        if(currentStatus == STATUS_REFRESHING){
-            setRefreshableViewWrapperHeight(refreshableViewWrapperOriginalHeight - innerHeader.getMeasuredHeight());
-        }
-        if(currentFooterStatus == STATUS_LOADING){
-            setRefreshableViewWrapperHeight(refreshableViewWrapperOriginalHeight - innerFooter.getMeasuredHeight());
-            setHeaderViewHeight(headerOriginalHeight+innerFooter.getHeight());
-        }
-        if((currentStatus == STATUS_REFRESH_FINISHED||currentStatus == STATUS_PULL_TO_REFRESH) &&
-                (currentFooterStatus == STATUS_LOAD_NORMAL||currentFooterStatus == STATUS_LOAD_FINISHED)){
-            setRefreshableViewWrapperHeight(refreshableViewWrapperOriginalHeight);
-            setHeaderViewHeight(headerOriginalHeight);
-        }
-    }
-
-    private void setRefreshableViewWrapperHeight(int height){
-        LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) mRefreshableViewWrapper.getLayoutParams();
-        params.height = height;
-        requestLayout();
-    }
-
-    private void setHeaderViewHeight(int height){
-        LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) header.getLayoutParams();
-        params.height = height;
-        requestLayout();
     }
 
     public void updateFooterView(){
@@ -601,7 +555,10 @@ public abstract class PullToRefreshBase<T extends View>  extends LinearLayout {
             footerProgressBar.setVisibility(View.VISIBLE);
             footerArrow.clearAnimation();
             footerArrow.setVisibility(View.GONE);
-            onLoadEvent();
+            if(mListener!=null){
+                mListener.onLoadMore();
+            }
+
         }
     }
 
@@ -615,7 +572,6 @@ public abstract class PullToRefreshBase<T extends View>  extends LinearLayout {
         currentStatus = STATUS_REFRESH_FINISHED;
         mScroller.startScroll(0,getScrollY(),0,-getScrollY());
         invalidate();
-        updateRefreshableViewWrapperHeight();
     }
 
     public void setRefreshing(){
@@ -638,7 +594,6 @@ public abstract class PullToRefreshBase<T extends View>  extends LinearLayout {
         currentFooterStatus = STATUS_LOAD_FINISHED;
         mScroller.startScroll(0,getScrollY(),0,-getScrollY());
         invalidate();
-        updateRefreshableViewWrapperHeight();
     }
 
     public void setLoading(){
@@ -700,19 +655,11 @@ public abstract class PullToRefreshBase<T extends View>  extends LinearLayout {
         return mRefreshableViewWrapper;
     }
 
-    private void onRefreshEvent(){
-        if(mListener!=null){
-            mListener.onRefresh();
-        }
+    protected abstract T setRefreshView(Context context, AttributeSet attrs);
+    protected abstract void smoothToBottom();
 
-        updateRefreshableViewWrapperHeight();
-    }
-
-    private void onLoadEvent(){
-        if(mListener!=null){
-            mListener.onLoadMore();
-        }
-        updateRefreshableViewWrapperHeight();
+    public T getRefreshView(){
+        return refreshView;
     }
 
     public Mode getMode() {
@@ -743,11 +690,5 @@ public abstract class PullToRefreshBase<T extends View>  extends LinearLayout {
 
     public void setOnRefreshLoadListener(RefreshLoadListener pListener) {
         mListener = pListener;
-    }
-
-    protected abstract T setRefreshView(Context context, AttributeSet attrs);
-
-    public T getRefreshView(){
-        return refreshView;
     }
 }

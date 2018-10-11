@@ -149,4 +149,12 @@ public class PullToRefreshRecycleView extends PullToRefreshBase<RecyclerView> {
         }
         return newLp;
     }
+
+    @Override
+    public void smoothToBottom() {
+        if (getRefreshView().getAdapter()!=null) {
+            getRefreshView().smoothScrollToPosition(getRefreshView().getAdapter().getItemCount() - 1);
+        }
+    }
+
 }

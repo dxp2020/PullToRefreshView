@@ -336,7 +336,7 @@ public class SwipeView extends ViewGroup{
     }
 
     public boolean isOpen(){
-        if(leftMenu.isOpen()||rightMenu.isOpen()){
+        if((leftMenu!=null&&leftMenu.isOpen())||(rightMenu!=null&&rightMenu.isOpen())){
             return true;
         }
         return false;

@@ -46,4 +46,9 @@ public class PullToRefreshWebView extends PullToRefreshBase<WebView> {
             return false;
         }
     }
+
+    @Override
+    public void smoothToBottom() {
+        getRefreshView().scrollTo(0, computeVerticalScrollRange());
+    }
 }

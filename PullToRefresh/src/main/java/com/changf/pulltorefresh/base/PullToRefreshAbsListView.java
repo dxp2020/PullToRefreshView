@@ -1,6 +1,8 @@
 package com.changf.pulltorefresh.base;
 
 import android.content.Context;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.Gravity;
@@ -12,6 +14,7 @@ import android.widget.AbsListView;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.ListAdapter;
+import android.widget.ListView;
 
 public abstract class PullToRefreshAbsListView<T extends AbsListView> extends PullToRefreshBase<T> {
 
@@ -95,4 +98,13 @@ public abstract class PullToRefreshAbsListView<T extends AbsListView> extends Pu
         getRefreshView().setAdapter(adapter);
     }
 
+    @Override
+    public void smoothToBottom() {
+        new Handler().post(new Runnable() {
+            @Override
+            public void run() {
+                getRefreshView().setSelection(ListView.FOCUS_DOWN);
+            }
+        });
+    }
 }
