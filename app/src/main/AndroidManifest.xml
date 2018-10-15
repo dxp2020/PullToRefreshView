@@ -24,6 +24,7 @@
         <activity android:name=".activity.MainActivityScrollView"/>
         <activity android:name=".activity.MainActivityWebView"/>
         <activity android:name=".activity.MainActivitySwipeView"/>
+        <activity android:name=".activity.MainActivitySwipeView2"/>
 
 
     </application>

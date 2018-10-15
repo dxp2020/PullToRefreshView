@@ -30,7 +30,7 @@ public class MainActivitySwipeView extends Activity {
     private List<String> data = new ArrayList<>();
 
     private void initData(){
-        for(int i=0;i<100;i++){
+        for(int i=0;i<10;i++){
             data.add("张"+(i+1));
         }
     }
@@ -61,7 +61,7 @@ public class MainActivitySwipeView extends Activity {
         adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1,data);
         lv_listview = lv_swipe_list.getRefreshView();
         lv_listview.setAdapter(adapter);
-        lv_listview.setSwipeDirection(SwipeDirection.BOTH);
+        lv_listview.setSwipeDirection(SwipeDirection.LEFT);
         lv_listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {

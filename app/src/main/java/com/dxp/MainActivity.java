@@ -17,6 +17,7 @@ import com.dxp.activity.MainActivityListView;
 import com.dxp.activity.MainActivityRecycleView;
 import com.dxp.activity.MainActivityScrollView;
 import com.dxp.activity.MainActivitySwipeView;
+import com.dxp.activity.MainActivitySwipeView2;
 import com.dxp.activity.MainActivityWebView;
 import com.changf.pulltorefresh.PullToRefreshSwipeListView;
 import com.changf.pulltorefresh.base.PullToRefreshBase;
@@ -44,6 +45,7 @@ public class MainActivity extends Activity {
         data.add("ScrollView");
         data.add("WebView");
         data.add("SwipeListView");
+        data.add("SwipeItemView");
 
         lv_listview = findViewById(R.id.lv_listview);
         adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1,data);
@@ -70,6 +72,9 @@ public class MainActivity extends Activity {
                         break;
                     case 5:
                         startActivity(new Intent(MainActivity.this,MainActivitySwipeView.class));
+                        break;
+                    case 6:
+                        startActivity(new Intent(MainActivity.this,MainActivitySwipeView2.class));
                         break;
                 }
             }
