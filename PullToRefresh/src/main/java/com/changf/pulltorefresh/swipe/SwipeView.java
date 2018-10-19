@@ -9,7 +9,7 @@ import android.view.ViewGroup;
 import android.widget.Scroller;
 
 
-public class SwipeView extends ViewGroup{
+public class SwipeView extends ViewGroup implements SwipeParent{
     private String TAG = "SwipeView";
 
     private Context context;
@@ -145,24 +145,24 @@ public class SwipeView extends ViewGroup{
                 //只往左滑
                 if(swipeDirection==SwipeDirection.LEFT){
                     moveRightMenu(deltaX);
-                //只往右滑
+                    //只往右滑
                 }else if(swipeDirection==SwipeDirection.RIGHT){
                     moveLeftMenu(deltaX);
-                //既可以往左滑，也可以往右划
+                    //既可以往左滑，也可以往右划
                 }else if(swipeDirection==SwipeDirection.BOTH) {
                     //未滑动
                     if(getScrollX()==0){
                         //滑出左侧菜单 ,加swipeStatus状态限制，是因为不允许，同时左滑右滑
                         if(deltaX>0&&(swipeStatus==null||swipeStatus == SwipeDirection.RIGHT)){
                             moveLeftMenu(deltaX);
-                        //滑出右侧菜单
+                            //滑出右侧菜单
                         }else if(deltaX<0&&(swipeStatus==null||swipeStatus == SwipeDirection.LEFT)){
                             moveRightMenu(deltaX);
                         }
-                    //已滑出左滑
+                        //已滑出左滑
                     }else if(getScrollX()<0){
                         moveLeftMenu(deltaX);
-                    //已滑出右滑
+                        //已滑出右滑
                     }else if(getScrollX()>0){
                         moveRightMenu(deltaX);
                     }
@@ -227,7 +227,7 @@ public class SwipeView extends ViewGroup{
             }else if(distance<deltaX){
                 scrollBy((int) -distance, 0);
             }
-        //左滑
+            //左滑
         }else{
             float distance = Math.abs(getScrollX());
             if(distance>Math.abs(deltaX)){
@@ -258,7 +258,7 @@ public class SwipeView extends ViewGroup{
             }else if(distance>0){
                 scrollBy((int) distance, 0);
             }
-        //右滑
+            //右滑
         }else{
             float distance = getScrollX();
             if(distance>deltaX){
@@ -315,7 +315,7 @@ public class SwipeView extends ViewGroup{
     }
 
     public void smoothCloseMenu(){
-        if(leftMenu.isOpen()||rightMenu.isOpen()){
+        if((leftMenu!=null&&leftMenu.isOpen())||(rightMenu!=null&&rightMenu.isOpen())){
             mScroller.startScroll(getScrollX(),0,-getScrollX(),0);
             invalidate();
         }
@@ -335,6 +335,11 @@ public class SwipeView extends ViewGroup{
         }
     }
 
+    @Override
+    public int getScrolledX() {
+        return getScrollX();
+    }
+
     public boolean isOpen(){
         if((leftMenu!=null&&leftMenu.isOpen())||(rightMenu!=null&&rightMenu.isOpen())){
             return true;
@@ -345,6 +350,7 @@ public class SwipeView extends ViewGroup{
     public void closeMenu() {
         //scrollBy x为正，则内容往左移，x为负内容往右移
         scrollBy(-getScrollX(), 0);
+        notifyClosed();
     }
 
     protected void openMenu(SwipeDirection pSwipeDirection){

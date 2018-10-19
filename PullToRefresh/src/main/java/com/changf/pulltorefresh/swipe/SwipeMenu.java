@@ -12,7 +12,7 @@ import android.widget.TextView;
 
 public class SwipeMenu extends LinearLayout implements View.OnClickListener{
     private OnSwipeItemClickListener onItemClickListener;
-    private SwipeView swipeView;
+    private SwipeParent swipeView;
 
     public SwipeMenu(Context context) {
         this(context,null);
@@ -66,11 +66,11 @@ public class SwipeMenu extends LinearLayout implements View.OnClickListener{
     public void onClick(View v) {
         if (onItemClickListener != null) {
             onItemClickListener.onItemClick(v.getId());
-            swipeView.smoothCloseMenu();
+            swipeView.closeMenu();
         }
     }
 
-    public void setSwipeView(SwipeView swipeView) {
+    public void setSwipeView(SwipeParent swipeView) {
         this.swipeView = swipeView;
     }
 
@@ -79,7 +79,7 @@ public class SwipeMenu extends LinearLayout implements View.OnClickListener{
     }
 
     public boolean isOpen() {
-        return Math.abs(swipeView.getScrollX())==getMeasuredWidth();
+        return Math.abs(swipeView.getScrolledX())==getMeasuredWidth();
     }
 
 }

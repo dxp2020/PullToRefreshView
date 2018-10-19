@@ -10,7 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Scroller;
 
-public class SwipeViews extends ViewGroup {
+public class SwipeViews extends ViewGroup implements SwipeParent{
     private String TAG = "SwipeView";
 
     private Context context;
@@ -68,13 +68,15 @@ public class SwipeViews extends ViewGroup {
     @Override
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
-        contentView = getChildAt(0);
-        contentView.setOnTouchListener(new OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                return true;
-            }
-        });
+        if(contentView==null&&getChildCount()>0){
+            contentView = getChildAt(0);
+            contentView.setOnTouchListener(new OnTouchListener() {
+                @Override
+                public boolean onTouch(View v, MotionEvent event) {
+                    return true;
+                }
+            });
+        }
     }
 
     @Override
@@ -157,10 +159,10 @@ public class SwipeViews extends ViewGroup {
                         }else if(deltaX<0&&(swipeStatus==null||swipeStatus == SwipeDirection.LEFT)){
                             moveRightMenu(deltaX);
                         }
-                    //已滑出左滑
+                        //已滑出左滑
                     }else if(leftMenu.getRight()>0){
                         moveLeftMenu(deltaX);
-                    //已滑出右滑
+                        //已滑出右滑
                     }else if(rightMenu.getLeft()<contentView.getRight()){
                         moveRightMenu(deltaX);
                     }
@@ -169,7 +171,7 @@ public class SwipeViews extends ViewGroup {
             case MotionEvent.ACTION_CANCEL:
             case MotionEvent.ACTION_UP:
                 isRelesedFinger = true;
-                int scrolledX = scrolledX();
+                int scrolledX = getScrolledX();
                 //添加回弹效果
                 if(scrolledX==0){
                     swipeStatus = null;
@@ -197,22 +199,12 @@ public class SwipeViews extends ViewGroup {
         return super.onTouchEvent(ev);
     }
 
-    public int scrolledX(){
-        if(swipeStatus == SwipeDirection.LEFT){
-            return contentView.getRight() - rightMenu.getLeft();
-        }else if(swipeStatus == SwipeDirection.RIGHT){
-            return leftMenu.getRight() - contentView.getLeft();
-        }
-        return 0;
-    }
-
     @Override
     public void computeScroll() {
         if(mScroller.computeScrollOffset()){
-            if(swipeStatus == SwipeDirection.LEFT){
+            if(rightMenu!=null&&rightMenu.getLeft()<contentView.getRight()){
                 rightMenu.offsetLeftAndRight(mScroller.getCurrX()-rightMenu.getLeft());
-            }else if(swipeStatus == SwipeDirection.RIGHT){
-                Log.e(TAG,"LEFT->"+leftMenu.getLeft()+" CurrX"+mScroller.getCurrX());
+            }else if(leftMenu!=null&&leftMenu.getRight()>0){
                 leftMenu.offsetLeftAndRight(mScroller.getCurrX()-leftMenu.getLeft());
             }
             postInvalidate();
@@ -241,7 +233,7 @@ public class SwipeViews extends ViewGroup {
             }else{
                 leftMenu.offsetLeftAndRight(distance);
             }
-        //左滑
+            //左滑
         }else{
             int distance = leftMenu.getRight();
             if(distance>Math.abs(deltaX)){
@@ -288,6 +280,9 @@ public class SwipeViews extends ViewGroup {
 
     @Override
     public void setOnClickListener(@Nullable View.OnClickListener l) {
+        if(contentView==null&&getChildCount()>0){
+            contentView = getChildAt(0);
+        }
         contentView.setOnClickListener(l);
         contentView.setOnTouchListener(null);
     }
@@ -323,6 +318,32 @@ public class SwipeViews extends ViewGroup {
                 getContext().getResources().getDisplayMetrics());
     }
 
+    public void smoothCloseMenu(){
+        if((rightMenu!=null&&rightMenu.getLeft()<contentView.getRight())){
+            mScroller.startScroll(rightMenu.getLeft(),0,contentView.getRight()-rightMenu.getLeft(),0);
+            invalidate();
+        }else if((leftMenu!=null&&leftMenu.getRight()>0)){
+            mScroller.startScroll(leftMenu.getLeft(),0,-leftMenu.getRight(),0);
+            invalidate();
+        }
+    }
+
+    public void closeMenu() {
+        leftMenu.offsetLeftAndRight(-Math.abs(leftMenu.getMeasuredWidth()+leftMenu.getLeft()));
+        rightMenu.offsetLeftAndRight(contentView.getRight()-rightMenu.getLeft());
+        notifyClosed();
+    }
+
+    @Override
+    public int getScrolledX() {
+        if(rightMenu!=null&&rightMenu.getLeft()<contentView.getRight()){
+            return contentView.getRight() - rightMenu.getLeft();
+        }else if(leftMenu!=null&&leftMenu.getRight()>0){
+            return leftMenu.getRight() - contentView.getLeft();
+        }
+        return 0;
+    }
+
     public interface OnClickListener{
         void onClick(SwipeViews view);
     }
@@ -350,12 +371,16 @@ public class SwipeViews extends ViewGroup {
             swipeDirection = SwipeDirection.NONE;
         }else if(leftMenu!=null&&rightMenu==null){
             swipeDirection = SwipeDirection.RIGHT;
+            leftMenu.setSwipeView(this);
             addView(leftMenu);
         }else if(leftMenu==null&&rightMenu!=null){
             swipeDirection = SwipeDirection.LEFT;
+            rightMenu.setSwipeView(this);
             addView(rightMenu);
         }else if(leftMenu!=null&&rightMenu!=null){
             swipeDirection = SwipeDirection.BOTH;
+            leftMenu.setSwipeView(this);
+            rightMenu.setSwipeView(this);
             addView(leftMenu);
             addView(rightMenu);
         }
